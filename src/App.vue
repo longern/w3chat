@@ -42,7 +42,7 @@ function sendMessage(message) {
   else messageType = "text/plain";
 
   const messageBody = {
-    id: crypto.randomUUID(),
+    id: Math.random().toString(36).substr(2),
     type: messageType,
     from: peerId.value,
     data: message,
