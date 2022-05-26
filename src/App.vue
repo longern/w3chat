@@ -11,9 +11,10 @@ const messages = ref([]);
 const peer = new Peer();
 const connections = ref([]);
 
-function onReceiveData(data) {
-  const messageBody = JSON.parse(data);
-  messages.value.push(messageBody);
+async function onReceiveData(body) {
+  if (body.type === "image")
+    body.data = URL.createObjectURL(new Blob([body.data]));
+  messages.value.push(body);
 }
 
 peer.on("open", function (id) {
@@ -36,21 +37,30 @@ peer.on("connection", function (conn) {
 });
 
 function sendMessage(message) {
+  let messageType = null;
+  if (message instanceof Blob) messageType = "image";
+  else messageType = "text";
+
   const messageBody = {
     id: crypto.randomUUID(),
-    type: "text",
+    type: messageType,
     from: peerId.value,
     data: message,
   };
-  messages.value.push(messageBody);
   for (let conn of connections.value) {
-    conn.send(JSON.stringify(messageBody));
+    conn.send(messageBody);
   }
+  if (messageType === "image")
+    messageBody.data = URL.createObjectURL(new Blob([messageBody.data]));
+  messages.value.push(messageBody);
 }
 </script>
 
 <template>
-  <div class="header color-primary" v-text="connections.length + ' ' + peerId"></div>
+  <div
+    class="header color-primary"
+    v-text="connections.length + ' ' + peerId"
+  ></div>
   <Main :messages="messages" />
   <Footer @send="sendMessage" />
 </template>

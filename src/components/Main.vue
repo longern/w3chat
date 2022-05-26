@@ -15,7 +15,16 @@ const props = defineProps({
       <div class="col">
         <div class="from" v-text="message.from"></div>
         <div class="fill-width">
-          <span class="message-text" v-text="message.data"></span>
+          <span
+            v-if="message.type === 'text'"
+            class="message"
+            v-text="message.data"
+          ></span>
+          <img
+            class="message"
+            v-else-if="message.type === 'image'"
+            :src="message.data"
+          />
         </div>
       </div>
     </div>
@@ -27,7 +36,11 @@ const props = defineProps({
   padding: 8px;
 }
 
-.message-text {
+.message {
+  max-width: 100%;
+}
+
+span.message {
   background-color: white;
   padding: 8px 12px;
   border-radius: 16px;
@@ -36,7 +49,7 @@ const props = defineProps({
   min-width: 1em;
 }
 
-.message-multimedia {
+img.message {
   background-color: white;
   border-radius: 4px;
   display: inline-block;

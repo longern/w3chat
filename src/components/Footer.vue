@@ -3,6 +3,7 @@ import { ref } from "vue";
 
 const text = ref("");
 const input = ref(null);
+const image = ref(null);
 
 const emit = defineEmits(["send"]);
 
@@ -11,6 +12,14 @@ function sendMessage() {
   emit("send", text.value);
   text.value = "";
   input.value.focus();
+}
+
+function sendImage() {
+  if (!image.value.files) return;
+  const file = image.value.files[0];
+  const blob = new Blob([file], { type: file.type });
+  emit("send", blob);
+  image.value.value = null;
 }
 </script>
 
@@ -33,7 +42,9 @@ function sendMessage() {
     </form>
     <div class="row" style="margin-top: 0; text-align: center">
       <div class="col">
-        <span class="mdi mdi-image"></span>
+        <span class="mdi mdi-image" @click="image.click()">
+          <input ref="image" type="file" hidden @change="sendImage">
+        </span>
       </div>
       <div class="col">
         <span class="mdi mdi-video"></span>
