@@ -40,7 +40,7 @@ function sendImage() {
         </div>
       </div>
     </form>
-    <div class="row" style="margin-top: 0; text-align: center">
+    <div class="row" style="margin: 4px 0; text-align: center">
       <div class="col">
         <span class="mdi mdi-image" @click="image.click()">
           <input ref="image" type="file" hidden @change="sendImage">

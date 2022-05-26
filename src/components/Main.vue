@@ -16,13 +16,13 @@ const props = defineProps({
         <div class="from" v-text="message.from"></div>
         <div class="fill-width">
           <span
-            v-if="message.type === 'text'"
+            v-if="message.type === 'text/plain'"
             class="message"
             v-text="message.data"
           ></span>
           <img
             class="message"
-            v-else-if="message.type === 'image'"
+            v-else-if="message.type.startsWith('image/')"
             :src="message.data"
           />
         </div>

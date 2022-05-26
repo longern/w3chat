@@ -12,8 +12,8 @@ const peer = new Peer();
 const connections = ref([]);
 
 async function onReceiveData(body) {
-  if (body.type === "image")
-    body.data = URL.createObjectURL(new Blob([body.data]));
+  if (body.type.startsWith("image/"))
+    body.data = URL.createObjectURL(new Blob([body.data, { type: body.type }]));
   messages.value.push(body);
 }
 
@@ -38,8 +38,8 @@ peer.on("connection", function (conn) {
 
 function sendMessage(message) {
   let messageType = null;
-  if (message instanceof Blob) messageType = "image";
-  else messageType = "text";
+  if (message instanceof Blob) messageType = message.type;
+  else messageType = "text/plain";
 
   const messageBody = {
     id: crypto.randomUUID(),
@@ -50,8 +50,8 @@ function sendMessage(message) {
   for (let conn of connections.value) {
     conn.send(messageBody);
   }
-  if (messageType === "image")
-    messageBody.data = URL.createObjectURL(new Blob([messageBody.data]));
+  if (messageType.startsWith("image/"))
+    messageBody.data = URL.createObjectURL(messageBody.data);
   messages.value.push(messageBody);
 }
 </script>
