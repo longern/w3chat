@@ -1,7 +1,7 @@
 <script setup>
 const props = defineProps({
   messages: Array,
-})
+});
 </script>
 
 <template>
@@ -20,11 +20,13 @@ const props = defineProps({
             class="message"
             v-text="message.data"
           ></span>
-          <img
-            class="message"
+          <a
             v-else-if="message.type.startsWith('image/')"
-            :src="message.url"
-          />
+            :href="message.url"
+            target="_blank"
+          >
+            <img class="message" :src="message.url" />
+          </a>
         </div>
       </div>
     </div>
@@ -70,7 +72,7 @@ img.message {
   text-align: center;
 }
 
-.avatar>span {
+.avatar > span {
   display: block;
   width: 100%;
   height: 100%;
