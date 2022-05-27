@@ -23,7 +23,7 @@ const props = defineProps({
           <img
             class="message"
             v-else-if="message.type.startsWith('image/')"
-            :src="message.data"
+            :src="message.url"
           />
         </div>
       </div>

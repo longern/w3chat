@@ -13,7 +13,7 @@ const connections = ref([]);
 
 async function onReceiveData(body) {
   if (body.type.startsWith("image/"))
-    body.data = URL.createObjectURL(new Blob([body.data, { type: body.type }]));
+    body.url = URL.createObjectURL(new Blob([body.data, { type: body.type }]));
   messages.value.push(body);
 }
 
@@ -36,6 +36,16 @@ peer.on("connection", function (conn) {
   connections.value.push(conn);
 });
 
+peer.on("error", function (err) {
+  messages.value.push({
+    id: Math.random().toString(36).substr(2),
+    type: "text/plain",
+    from: "System",
+    data: "Error: " + err.type,
+    private: true,
+  });
+});
+
 function sendMessage(message) {
   let messageType = null;
   if (message instanceof Blob) messageType = message.type;
@@ -51,7 +61,7 @@ function sendMessage(message) {
     conn.send(messageBody);
   }
   if (messageType.startsWith("image/"))
-    messageBody.data = URL.createObjectURL(messageBody.data);
+    messageBody.url = URL.createObjectURL(messageBody.data);
   messages.value.push(messageBody);
 }
 </script>
