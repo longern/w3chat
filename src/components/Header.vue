@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import NativeShare from "nativeshare";
 
 const props = defineProps({
@@ -8,6 +8,11 @@ const props = defineProps({
 });
 
 const isWechat = ref(/micromessenger/i.test(navigator.userAgent));
+
+function verbosePeerId(peerId) {
+  if (!peerId) return "";
+  return peerId.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+};
 
 function share() {
   const nativeShare = new NativeShare();
@@ -27,7 +32,7 @@ function share() {
 <template>
   <div class="header color-primary row">
     <div class="col">
-      <div v-text="peerId || 'Connecting...'"></div>
+      <div v-text="verbosePeerId(peerId) || 'Connecting...'"></div>
       <div style="font-size: 8px"><span v-text="online"></span> online</div>
     </div>
     <div v-if="!isWechat" class="col-auto btn" @click="share">

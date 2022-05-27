@@ -10,7 +10,7 @@ const peerId = ref("");
 const messages = ref([]);
 const messagesIds = computed(() => new Set(messages.value.map((m) => m.id)));
 
-const peer = new Peer();
+const peer = new Peer(Math.random().toString().slice(2, 11));
 const connections = ref([]);
 const connectedPeers = computed(
   () => new Set(connections.value.map((c) => c.peer))
@@ -77,6 +77,7 @@ peer.on("open", function (id) {
 });
 
 peer.on("connection", handleConnection);
+peer.on("disconnected", peer.reconnect);
 peer.on("error", onError);
 window.addEventListener("beforeunload", peer.destroy);
 
