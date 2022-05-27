@@ -11,40 +11,50 @@ const messages = ref([]);
 const peer = new Peer();
 const connections = ref([]);
 
-async function onReceiveData(body) {
+function onReceiveData(body) {
   if (body.type.startsWith("image/"))
     body.url = URL.createObjectURL(new Blob([body.data, { type: body.type }]));
   messages.value.push(body);
+}
+
+function onError(err) {
+  messages.value.push({
+    id: Math.random().toString(36).substr(2),
+    type: "text/plain",
+    from: "System",
+    data: "Error: " + err.message,
+    private: true,
+  });
+}
+
+function handleConnection(connection) {
+  connection.on("data", onReceiveData);
+  connection.on("error", onError);
+  connections.value.push(connection);
 }
 
 peer.on("open", function (id) {
   peerId.value = id;
 
   const peerIdMatch = location.search.match(/p=([\da-f-]*)/);
-  if (peerIdMatch) {
-    const peerId = peerIdMatch[1];
-    const conn = peer.connect(peerId);
-    conn.on("open", function () {
-      conn.on("data", onReceiveData);
-      connections.value.push(conn);
-    });
+  if (peerIdMatch) handleConnection(peer.connect(peerIdMatch[1]));
+});
+
+peer.on("connection", handleConnection);
+peer.on("error", onError);
+window.addEventListener("beforeunload", peer.destroy);
+
+function removeClosedConnections() {
+  for (let i = 0; i < connections.value.length; i++) {
+    const connection = connections.value[i];
+    if (!connection.open) {
+      connections.value.splice(i, 1);
+      i--;
+    }
   }
-});
+}
 
-peer.on("connection", function (conn) {
-  conn.on("data", onReceiveData);
-  connections.value.push(conn);
-});
-
-peer.on("error", function (err) {
-  messages.value.push({
-    id: Math.random().toString(36).substr(2),
-    type: "text/plain",
-    from: "System",
-    data: "Error: " + err.type,
-    private: true,
-  });
-});
+setInterval(removeClosedConnections, 3000);
 
 function sendMessage(message) {
   let messageType = null;
@@ -57,6 +67,7 @@ function sendMessage(message) {
     from: peerId.value,
     data: message,
   };
+  removeClosedConnections();
   for (let conn of connections.value) {
     conn.send(messageBody);
   }

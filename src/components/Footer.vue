@@ -3,6 +3,7 @@ import { ref } from "vue";
 
 const text = ref("");
 const input = ref(null);
+const showRecordDialog = ref(false);
 const image = ref(null);
 
 const emit = defineEmits(["send"]);
@@ -40,7 +41,11 @@ function sendImage() {
         </div>
       </div>
     </form>
-    <div class="row" style="margin: 4px 0; text-align: center">
+    <div class="row button-group" style="margin: 4px 0; text-align: center">
+      <div class="col">
+        <span class="mdi mdi-microphone">
+        </span>
+      </div>
       <div class="col">
         <span class="mdi mdi-image" @click="image.click()">
           <input ref="image" type="file" hidden @change="sendImage">
@@ -56,5 +61,14 @@ function sendImage() {
 <style>
 .send-button {
   margin-left: 24px;
+}
+
+.button-group span.mdi {
+  color: #999;
+  cursor: pointer;
+}
+
+.button-group span.mdi:active {
+  color: deepskyblue;
 }
 </style>
