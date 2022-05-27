@@ -1,20 +1,39 @@
 <script setup>
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import Main from "./components/Main.vue";
 import Footer from "./components/Footer.vue";
 
 const peerId = ref("");
 const messages = ref([]);
+const messagesIds = computed(() => new Set(messages.value.map((m) => m.id)));
 
 const peer = new Peer();
 const connections = ref([]);
+const connectedPeers = computed(
+  () => new Set(connections.value.map((c) => c.peer))
+);
+const connectingPeers = new Set();
 
 function onReceiveData(body) {
+  if (body.type === "broadcast") {
+    for (const pid of body.data)
+      if (
+        pid !== peerId.value &&
+        !connectedPeers.value.has(pid) &&
+        !connectingPeers.has(pid) &&
+        connections.value.length <= 32
+      ) {
+        connectingPeers.add(pid);
+        handleConnection(peer.connect(pid));
+      }
+    return;
+  }
+
   if (body.type.startsWith("image/"))
     body.url = URL.createObjectURL(new Blob([body.data], { type: body.type }));
-  messages.value.push(body);
+  if (!messagesIds.value.has(body.id)) messages.value.push(body);
 }
 
 function onError(err) {
@@ -33,9 +52,14 @@ function handleConnection(connection) {
   connection.on("error", onError);
   connection.on("open", function () {
     connections.value.push(this);
+    connectingPeers.delete(this.peer);
+    this.send({
+      type: "broadcast",
+      from: peerId.value,
+      data: [...connectedPeers.value],
+    });
     for (const message of messages.value) {
-      console.log(this, message);
-      this.send(message);
+      if (!message.private) this.send(message);
     }
   });
 }
@@ -44,7 +68,10 @@ peer.on("open", function (id) {
   peerId.value = id;
 
   const peerIdMatch = location.search.match(/p=([\da-f-]*)/);
-  if (peerIdMatch) handleConnection(peer.connect(peerIdMatch[1]));
+  if (peerIdMatch && connections.value.length <= 32) {
+    connectingPeers.add(id);
+    handleConnection(peer.connect(peerIdMatch[1]));
+  }
   window.history.replaceState(null, null, `?p=${id}`);
 });
 
@@ -87,10 +114,12 @@ function sendMessage(message) {
 </script>
 
 <template>
-  <div
-    class="header color-primary"
-    v-text="connections.length + ' ' + peerId"
-  ></div>
+  <div class="header color-primary">
+    <div v-text="peerId || 'Connecting...'"></div>
+    <div style="font-size: 8px">
+      <span v-text="connections.length + 1"></span> online
+    </div>
+  </div>
   <Main :messages="messages" />
   <Footer @send="sendMessage" />
 </template>
@@ -109,7 +138,7 @@ function sendMessage(message) {
 .header {
   padding: 16px 0;
   text-align: center;
-  height: 1em;
+  height: 1.5em;
 }
 
 .main {
