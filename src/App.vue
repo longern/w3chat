@@ -2,6 +2,7 @@
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
 import { ref, computed } from "vue";
+import Header from "./components/Header.vue";
 import Main from "./components/Main.vue";
 import Footer from "./components/Footer.vue";
 
@@ -114,15 +115,10 @@ function sendMessage(message) {
 </script>
 
 <template>
-  <div class="header color-primary">
-    <div v-text="peerId || 'Connecting...'"></div>
-    <div style="font-size: 8px">
-      <span v-text="connections.length + 1"></span> online
-    </div>
-  </div>
+  <Header :peer-id="peerId" :online="connections.length + 1" />
   <Main :messages="messages" />
   <Footer :disabled="peerId === ''" @send="sendMessage" />
-</template>
+</template>import NativeShare from 'nativeshare'
 
 <style>
 @import "main.css";
