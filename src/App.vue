@@ -45,6 +45,7 @@ peer.on("open", function (id) {
 
   const peerIdMatch = location.search.match(/p=([\da-f-]*)/);
   if (peerIdMatch) handleConnection(peer.connect(peerIdMatch[1]));
+  window.history.replaceState(null, null, `?p=${id}`);
 });
 
 peer.on("connection", handleConnection);
