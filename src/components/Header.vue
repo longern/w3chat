@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref } from "vue";
 import NativeShare from "nativeshare";
 
 const props = defineProps({

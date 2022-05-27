@@ -1,10 +1,13 @@
 <script setup>
-import { ref } from "vue";
+import { ref, nextTick } from "vue";
 
 const text = ref("");
+const showRecordModal = ref(false);
+const showCallingModal = ref(false);
+
 const input = ref(null);
-const showRecordDialog = ref(false);
 const image = ref(null);
+const myself = ref(null);
 
 const props = defineProps({
   disabled: Boolean,
@@ -26,10 +29,23 @@ function sendImage() {
   emit("send", blob);
   image.value.value = null;
 }
+
+async function openMediaStream() {
+  showCallingModal.value = true;
+  await nextTick();
+
+  navigator.mediaDevices
+    .getUserMedia({ video: true, audio: true })
+    .then((stream) => {
+      myself.value.srcObject = stream;
+      myself.value.play();
+    });
+}
 </script>
 
 <template>
   <div class="footer">
+    <!-- First row (line input) -->
     <form @submit.prevent="sendMessage">
       <div class="row">
         <div class="col">
@@ -46,6 +62,8 @@ function sendImage() {
         </div>
       </div>
     </form>
+
+    <!-- Second row (buttons) -->
     <div class="row button-group" style="margin: 4px 0; text-align: center">
       <div class="col">
         <span class="mdi mdi-microphone"></span>
@@ -56,10 +74,16 @@ function sendImage() {
         </span>
       </div>
       <div class="col">
-        <span class="mdi mdi-video"></span>
+        <span class="mdi mdi-video" @click="openMediaStream"></span>
       </div>
     </div>
   </div>
+
+  <Teleport to="body">
+    <div v-if="showCallingModal" class="fullscreen-modal">
+      <video ref="myself" @click="showCallingModal = false"></video>
+    </div>
+  </Teleport>
 </template>
 
 <style>
@@ -74,5 +98,16 @@ function sendImage() {
 
 .button-group span.mdi:active {
   color: deepskyblue;
+}
+
+.fullscreen-modal {
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
 }
 </style>

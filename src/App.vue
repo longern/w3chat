@@ -1,7 +1,7 @@
 <script setup>
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
-import { ref, computed } from "vue";
+import { ref } from "vue";
 import Header from "./components/Header.vue";
 import Main from "./components/Main.vue";
 import Footer from "./components/Footer.vue";
@@ -16,7 +16,7 @@ import { sendMessage, peer, connections, messages, blobPool } from "./composable
   />
   <Main :messages="messages" :blobPool="blobPool" />
   <Footer :disabled="!peer" @send="sendMessage" />
-</template>import NativeShare from 'nativeshare'
+</template>
 
 <style>
 @import "main.css";

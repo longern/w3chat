@@ -19,7 +19,7 @@ function onBroadcast(body) {
       connections.value.length <= 32
     ) {
       connectingPeers.add(pid);
-      handleConnection(peer.value.connect(pid));
+      handleConnection(peer.value.connect(pid, { reliable: true }));
     }
 }
 
@@ -91,7 +91,7 @@ peer.value.on("open", function (id) {
   const peerIdMatch = location.search.match(/p=([\da-f-]*)/);
   if (peerIdMatch && connections.value.length <= 32) {
     connectingPeers.add(id);
-    handleConnection(peer.value.connect(peerIdMatch[1]));
+    handleConnection(peer.value.connect(peerIdMatch[1], { reliable: true }));
   }
   window.history.replaceState(null, null, `?p=${id}`);
 });
