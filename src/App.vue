@@ -13,7 +13,7 @@ const connections = ref([]);
 
 function onReceiveData(body) {
   if (body.type.startsWith("image/"))
-    body.url = URL.createObjectURL(new Blob([body.data, { type: body.type }]));
+    body.url = URL.createObjectURL(new Blob([body.data], { type: body.type }));
   messages.value.push(body);
 }
 
@@ -23,6 +23,7 @@ function onError(err) {
     type: "text/plain",
     from: "System",
     data: "Error: " + err.message,
+    timestamp: Date.now(),
     private: true,
   });
 }
@@ -30,7 +31,13 @@ function onError(err) {
 function handleConnection(connection) {
   connection.on("data", onReceiveData);
   connection.on("error", onError);
-  connections.value.push(connection);
+  connection.on("open", function () {
+    connections.value.push(this);
+    for (const message of messages.value) {
+      console.log(this, message);
+      this.send(message);
+    }
+  });
 }
 
 peer.on("open", function (id) {
@@ -66,6 +73,7 @@ function sendMessage(message) {
     type: messageType,
     from: peerId.value,
     data: message,
+    timestamp: Date.now(),
   };
   removeClosedConnections();
   for (let conn of connections.value) {

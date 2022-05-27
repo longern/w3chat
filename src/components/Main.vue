@@ -53,6 +53,7 @@ img.message {
   background-color: white;
   border-radius: 4px;
   display: inline-block;
+  max-height: 30vh;
 }
 
 .from {
