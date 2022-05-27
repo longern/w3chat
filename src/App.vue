@@ -6,15 +6,15 @@ import Header from "./components/Header.vue";
 import Main from "./components/Main.vue";
 import Footer from "./components/Footer.vue";
 
-import { sendMessage, peer, messages } from "./composables/transmit";
+import { sendMessage, peer, connections, messages, blobPool } from "./composables/transmit";
 </script>
 
 <template>
   <Header
     :peer-id="peer ? peer.id : ''"
-    :online="peer ? Object.keys(peer.connections).length + 1 : 0"
+    :online="connections.length + (peer ? 1 : 0)"
   />
-  <Main :messages="messages" />
+  <Main :messages="messages" :blobPool="blobPool" />
   <Footer :disabled="!peer" @send="sendMessage" />
 </template>import NativeShare from 'nativeshare'
 

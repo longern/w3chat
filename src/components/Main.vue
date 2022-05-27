@@ -3,6 +3,7 @@ import { ref, onBeforeUpdate, onUpdated } from "vue";
 
 const props = defineProps({
   messages: Array,
+  blobPool: Object,
 });
 
 const main = ref(null);
@@ -39,7 +40,7 @@ onUpdated(() => {
           ></span>
           <a
             v-else-if="message.type.startsWith('image/')"
-            :href="message.url"
+            :href="(blobPool[message.digest] || {}).url || message.url"
             target="_blank"
           >
             <img class="message" :src="message.url" />
@@ -72,7 +73,7 @@ img.message {
   background-color: white;
   border-radius: 4px;
   display: inline-block;
-  max-height: 30vh;
+  max-height: 8em;
 }
 
 .from {
