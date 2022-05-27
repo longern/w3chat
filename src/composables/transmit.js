@@ -46,7 +46,6 @@ function onReceiveData(body) {
   if (body.type === "blob") return onBlob.call(this, body);
   if (body.type === "requestBlob") return onRequestBlob.call(this, body);
 
-  console.log(body);
   if (body.data instanceof ArrayBuffer) {
     body.url = URL.createObjectURL(new Blob([body.data], { type: body.type }));
     blobPool.value[body.digest] = { type: body.type };
@@ -116,7 +115,7 @@ setInterval(removeClosedConnections, 3000);
 
 async function resizeImage(imageBlob) {
   const blobUrl = URL.createObjectURL(imageBlob);
-  const SIZE_LIMIT = 480 * 360;
+  const SIZE_LIMIT = 240 * 180;
   const img = await new Promise((resolve) => {
     const img = document.createElement("img");
     img.onload = () => resolve(img);
