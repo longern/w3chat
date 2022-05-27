@@ -54,6 +54,10 @@ body {
   color: white;
 }
 
+.color-primary[disabled] {
+  background-color: #a0bef0;
+}
+
 .mdi {
   font-size: 24px;
 }

@@ -6,6 +6,10 @@ const input = ref(null);
 const showRecordDialog = ref(false);
 const image = ref(null);
 
+const props = defineProps({
+  disabled: Boolean,
+});
+
 const emit = defineEmits(["send"]);
 
 function sendMessage() {
@@ -32,7 +36,13 @@ function sendImage() {
           <input ref="input" class="fill-width" v-model="text" />
         </div>
         <div class="col-auto">
-          <button type="submit" class="send-button color-primary">Send</button>
+          <button
+            type="submit"
+            :disabled="disabled"
+            class="send-button color-primary"
+          >
+            Send
+          </button>
         </div>
       </div>
     </form>

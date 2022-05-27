@@ -1,11 +1,28 @@
 <script setup>
+import { ref, onBeforeUpdate, onUpdated } from "vue";
+
 const props = defineProps({
   messages: Array,
+});
+
+const main = ref(null);
+let scrollToBottom = false;
+
+onBeforeUpdate(() => {
+  if (main.value.scrollTop + main.value.clientHeight >= main.value.scrollHeight - 16)
+    scrollToBottom = true;
+});
+
+onUpdated(() => {
+  if (scrollToBottom) {
+    main.value.scrollTop = main.value.scrollHeight;
+    scrollToBottom = false;
+  }
 });
 </script>
 
 <template>
-  <div class="main">
+  <div ref="main" class="main">
     <div class="row" v-for="(message, i) in messages" :key="i">
       <div class="col-auto">
         <div class="avatar rounded">
@@ -13,7 +30,7 @@ const props = defineProps({
         </div>
       </div>
       <div class="col">
-        <div class="from" v-text="message.from"></div>
+        <div class="from" v-text="message.from || 'I'"></div>
         <div class="fill-width">
           <span
             v-if="message.type === 'text/plain'"

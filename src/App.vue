@@ -121,7 +121,7 @@ function sendMessage(message) {
     </div>
   </div>
   <Main :messages="messages" />
-  <Footer @send="sendMessage" />
+  <Footer :disabled="peerId === ''" @send="sendMessage" />
 </template>
 
 <style>
