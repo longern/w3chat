@@ -81,7 +81,7 @@ async function openMediaStream() {
 
   <Teleport to="body">
     <div v-if="showCallingModal" class="fullscreen-modal">
-      <video ref="myself" @click="showCallingModal = false"></video>
+      <video ref="myself" muted @click="showCallingModal = false"></video>
     </div>
   </Teleport>
 </template>
