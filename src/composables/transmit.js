@@ -107,7 +107,7 @@ function handleConnection(connection) {
       from: peer.value.id,
       data: connections.value.map((c) => c.peer),
     });
-    if (stream.active)
+    if (stream.active.value)
       connection.send({ type: "event/streamStart" });
     for (const message of messages.value) {
       if (!message.private) this.send(message);
