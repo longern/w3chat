@@ -1,23 +1,29 @@
+import { ref } from "vue";
+
 const events = new EventTarget();
 
 export default {
-  mediaStream: null,
+  active: ref(false),
+  selfStream: null,
+  incomingStreams: [],
 
   start() {
     return navigator.mediaDevices
       .getUserMedia({ video: true, audio: true })
       .then((stream) => {
-        this.mediaStream = stream;
-        events.dispatchEvent(new CustomEvent("start", { detail: this.mediaStream }));
+        this.selfStream = stream;
+        this.active.value = true;
+        events.dispatchEvent(new CustomEvent("start", { detail: this.selfStream }));
         return stream;
       });
   },
 
   stop() {
-    if (this.mediaStream) {
-      this.mediaStream.getTracks().forEach((track) => track.stop());
+    if (this.selfStream) {
+      this.selfStream.getTracks().forEach((track) => track.stop());
       events.dispatchEvent(new CustomEvent("stop"));
-      this.mediaStream = null;
+      this.selfStream = null;
+      this.active.value = false;
     }
   },
 

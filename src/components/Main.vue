@@ -1,9 +1,9 @@
 <script setup>
 import { ref, onBeforeUpdate, onUpdated } from "vue";
+import { blobPool } from "@/composables/transmit";
 
 const props = defineProps({
   messages: Array,
-  blobPool: Object,
 });
 
 const main = ref(null);

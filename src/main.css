@@ -110,4 +110,5 @@ button {
   padding: 8px 12px;
   border: none;
   border-radius: 16px;
+  user-select: none;
 }

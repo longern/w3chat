@@ -5,6 +5,7 @@ export const peer = ref(null);
 export const messages = ref([]);
 export const connections = ref([]);
 export const blobPool = ref({});
+export const streaming = ref([]);
 
 const connectingPeers = new Set();
 const events = new EventTarget();
@@ -44,6 +45,24 @@ events.addEventListener("requestBlob", (event) => {
     digest: body.digest,
     data: blobPool.value[body.digest].data,
   });
+});
+
+events.addEventListener("streamStart", (event) => {
+  const { connection } = event.detail;
+  streaming.value.push(connection.peer);
+  connection.send({
+    type: "event/joinStream",
+  })
+});
+
+events.addEventListener("streamEnd", (event) => {
+  const { connection } = event.detail;
+  streaming.value.splice(streaming.value.indexOf(connection.peer), 1);
+});
+
+events.addEventListener("joinStream", (event) => {
+  const { connection } = event.detail;
+  peer.value.call(connection.peer, stream.selfStream);
 });
 
 function onReceiveData(body) {
@@ -103,6 +122,13 @@ peer.value.on("open", function (id) {
   window.history.replaceState(null, null, `?p=${id}`);
 });
 
+peer.value.on("call", async function (mediaConnection) {
+  mediaConnection.answer(stream.selfStream);
+  mediaConnection.on("stream", function (mediaStream) {
+    stream.incomingStreams.push(mediaStream);
+  });
+});
+
 peer.value.on("connection", handleConnection);
 peer.value.on("disconnected", peer.value.reconnect);
 peer.value.on("error", onError);
@@ -121,7 +147,7 @@ function removeClosedConnections() {
 stream.on("start", async function () {
   for (let conn of connections.value) {
     conn.send({
-      type: "event/mediaStream",
+      type: "event/streamStart",
     });
   }
 });

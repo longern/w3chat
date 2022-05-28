@@ -6,7 +6,7 @@ import Header from "./components/Header.vue";
 import Main from "./components/Main.vue";
 import Footer from "./components/Footer.vue";
 
-import { sendMessage, peer, connections, messages, blobPool } from "./composables/transmit";
+import { sendMessage, peer, connections, messages } from "./composables/transmit";
 </script>
 
 <template>
@@ -14,7 +14,7 @@ import { sendMessage, peer, connections, messages, blobPool } from "./composable
     :peer-id="peer ? peer.id : ''"
     :online="connections.length + (peer ? 1 : 0)"
   />
-  <Main :messages="messages" :blobPool="blobPool" />
+  <Main :messages="messages" />
   <Footer :disabled="!peer" @send="sendMessage" />
 </template>
 

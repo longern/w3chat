@@ -1,6 +1,7 @@
 <script setup>
 import { ref, nextTick } from "vue";
 import stream from "@/composables/stream";
+import Calling from "@/components/Calling.vue";
 
 const text = ref("");
 const showRecordModal = ref(false);
@@ -34,10 +35,7 @@ function sendImage() {
 async function openMediaStream() {
   showCallingModal.value = true;
   await nextTick();
-
-  const mediaStream = await stream.start();
-  myself.value.srcObject = mediaStream;
-  myself.value.play();
+  await stream.start();
 }
 </script>
 
@@ -78,17 +76,7 @@ async function openMediaStream() {
   </div>
 
   <Teleport to="body">
-    <div v-if="showCallingModal" class="fullscreen-modal">
-      <video
-        ref="myself"
-        muted
-        class="position-absolute object-fit-cover"
-        @click="
-          showCallingModal = false;
-          stream.stop();
-        "
-      ></video>
-    </div>
+    <Calling v-model="showCallingModal"/>
   </Teleport>
 </template>
 
