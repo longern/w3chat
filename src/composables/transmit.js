@@ -73,7 +73,11 @@ events.addEventListener("streamEnd", (event) => {
 
 events.addEventListener("joinStream", (event) => {
   const { connection } = event.detail;
-  peer.value.call(connection.peer, stream.myself.value);
+  const call = peer.value.call(connection.peer, stream.myself.value);
+  call.on("stream", (mediaStream) => {
+    mediaStream.connection = call;
+    stream.addIncoming(mediaStream)
+  });
 });
 
 function onReceiveData(body) {
@@ -150,7 +154,7 @@ peer.value.on("open", function (id) {
 });
 
 peer.value.on("call", async function (mediaConnection) {
-  mediaConnection.answer(stream.selfStream);
+  mediaConnection.answer(stream.myself.value);
   mediaConnection.on("stream", (mediaStream) => {
     mediaStream.connection = mediaConnection;
     stream.addIncoming(mediaStream)
@@ -179,6 +183,7 @@ stream.on("start", async function () {
       type: "event/streamStart",
     });
   }
+  joinStream();
 });
 
 stream.on("end", async function (event) {
