@@ -10,7 +10,10 @@ const main = ref(null);
 let scrollToBottom = false;
 
 onBeforeUpdate(() => {
-  if (main.value.scrollTop + main.value.clientHeight >= main.value.scrollHeight - 16)
+  if (
+    main.value.scrollTop + main.value.clientHeight >=
+    main.value.scrollHeight - 16
+  )
     scrollToBottom = true;
 });
 
@@ -40,11 +43,15 @@ onUpdated(() => {
           ></span>
           <a
             v-else-if="message.type.startsWith('image/')"
-            :href="(blobPool[message.digest] || {}).url || message.url"
+            :href="blobPool[message.digest].url || message.url"
             target="_blank"
           >
             <img class="message" :src="message.url" />
           </a>
+          <span
+            v-if="message.digest && !blobPool[message.digest].url"
+            class="mdi mdi-spin mdi-loading"
+          ></span>
         </div>
       </div>
     </div>

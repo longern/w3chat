@@ -2,7 +2,7 @@ body {
   margin: 0;
 }
 
-@media (min-width: 960px) {
+@media (max-width: 960px) {
   body {
     outline: none;
     -webkit-tap-highlight-color: transparent;
@@ -103,7 +103,6 @@ input {
   padding: 8px;
   border: none;
   border-radius: 16px;
-  outline: none;
 }
 
 button {
