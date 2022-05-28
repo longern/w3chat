@@ -9,6 +9,7 @@ export const streaming = ref([]);
 
 const connectingPeers = new Set();
 const events = new EventTarget();
+const MAX_CONNECTIONS = 32;
 
 const manualIdMatch = location.search.match(/m=([\da-f-]{6,})/);
 if (manualIdMatch)
@@ -19,12 +20,14 @@ else
 events.addEventListener("broadcast", (event) => {
   const { body } = event.detail;
   const connectedPeers = new Set(connections.value.map((c) => c.peer));
+  // When building the complete graph, peers may be broadcasted more than once.
+  // Skip if the peer is already connected or connecting.
   for (const pid of body.data)
     if (
       pid !== peer.value.id &&
       !connectedPeers.has(pid) &&
       !connectingPeers.has(pid) &&
-      connections.value.length <= 32
+      connections.value.length <= MAX_CONNECTIONS
     ) {
       connectingPeers.add(pid);
       handleConnection(peer.value.connect(pid, { reliable: true }));
@@ -74,12 +77,14 @@ events.addEventListener("joinStream", (event) => {
 });
 
 function onReceiveData(body) {
+  // `event/` prefix is used to distinguish messages from other types.
   if (body.type.startsWith("event/")) {
     const eventDetail = { detail: { connection: this, body: body } };
     events.dispatchEvent(new CustomEvent(body.type.slice(6), eventDetail));
     return;
   }
 
+  // Data is a thumbnail, so create a blob URL and request the full blob
   if (body.data instanceof ArrayBuffer) {
     body.url = URL.createObjectURL(new Blob([body.data], { type: body.type }));
     blobPool.value[body.digest] = { type: body.type };
@@ -89,11 +94,13 @@ function onReceiveData(body) {
     })
   }
 
+  // Filter out repeated messages
   const messagesIds = new Set(messages.value.map((m) => m.id));
   if (!messagesIds.has(body.id)) messages.value.push(body);
 }
 
 function onError(err) {
+  // Display error as a private message.
   messages.value.push({
     id: Math.random().toString(36).substring(2),
     type: "text/plain",
@@ -110,13 +117,19 @@ function handleConnection(connection) {
   connection.on("open", function () {
     connections.value.push(this);
     connectingPeers.delete(this.peer);
+
+    // Broadcast the new connection to all peers and build a complete graph.
     this.send({
       type: "event/broadcast",
       from: peer.value.id,
       data: connections.value.map((c) => c.peer),
     });
+
+    // If this user is streaming, notify the new peer.
     if (stream.myself.value)
       connection.send({ type: "event/streamStart" });
+
+    // Private messages (e.g. from the system) are not broadcasted.
     for (const message of messages.value) {
       if (!message.private) this.send(message);
     }
@@ -124,12 +137,14 @@ function handleConnection(connection) {
 }
 
 peer.value.on("open", function (id) {
+  // Connect to the peer specified in the URL, if any.
   const peerIdMatch = location.search.match(/p=([\da-f-]*)/);
-  if (peerIdMatch && connections.value.length <= 32) {
+  if (peerIdMatch && connections.value.length <= MAX_CONNECTIONS) {
     connectingPeers.add(id);
     handleConnection(peer.value.connect(peerIdMatch[1], { reliable: true }));
   }
-  // For sharing in wechat
+
+  // For sharing in wechat, replace the current URL with peer ID.
   if (/micromessenger/i.test(navigator.userAgent))
     window.history.replaceState(null, null, `?p=${id}`);
 });
