@@ -107,6 +107,8 @@ function handleConnection(connection) {
       from: peer.value.id,
       data: connections.value.map((c) => c.peer),
     });
+    if (stream.active)
+      connection.send({ type: "event/streamStart" });
     for (const message of messages.value) {
       if (!message.private) this.send(message);
     }
@@ -141,6 +143,7 @@ function removeClosedConnections() {
     const connection = connections.value[i];
     if (!connection.open) {
       connections.value.splice(i, 1);
+      streaming.value.splice(streaming.value.indexOf(connection.peer), 1);
       i--;
     }
   }
