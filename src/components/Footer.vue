@@ -1,5 +1,6 @@
 <script setup>
 import { ref, nextTick } from "vue";
+import stream from "@/composables/stream";
 
 const text = ref("");
 const showRecordModal = ref(false);
@@ -34,12 +35,9 @@ async function openMediaStream() {
   showCallingModal.value = true;
   await nextTick();
 
-  navigator.mediaDevices
-    .getUserMedia({ video: true, audio: true })
-    .then((stream) => {
-      myself.value.srcObject = stream;
-      myself.value.play();
-    });
+  const mediaStream = await stream.start();
+  myself.value.srcObject = mediaStream;
+  myself.value.play();
 }
 </script>
 
@@ -81,7 +79,14 @@ async function openMediaStream() {
 
   <Teleport to="body">
     <div v-if="showCallingModal" class="fullscreen-modal">
-      <video ref="myself" muted @click="showCallingModal = false"></video>
+      <video
+        ref="myself"
+        muted
+        @click="
+          showCallingModal = false;
+          stream.stop();
+        "
+      ></video>
     </div>
   </Teleport>
 </template>
@@ -109,5 +114,6 @@ async function openMediaStream() {
   width: 100%;
   height: 100%;
   z-index: 100;
+  overflow: auto;
 }
 </style>

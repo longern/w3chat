@@ -1,4 +1,5 @@
 import { ref } from "vue";
+import stream from "@/composables/stream";
 
 export const peer = ref(null);
 export const messages = ref([]);
@@ -6,10 +7,12 @@ export const connections = ref([]);
 export const blobPool = ref({});
 
 const connectingPeers = new Set();
+const events = new EventTarget();
 
 peer.value = new Peer(Math.random().toString().slice(2, 11));
 
-function onBroadcast(body) {
+events.addEventListener("broadcast", (event) => {
+  const { body } = event.detail;
   const connectedPeers = new Set(connections.value.map((c) => c.peer));
   for (const pid of body.data)
     if (
@@ -21,9 +24,10 @@ function onBroadcast(body) {
       connectingPeers.add(pid);
       handleConnection(peer.value.connect(pid, { reliable: true }));
     }
-}
+});
 
-function onBlob(body) {
+events.addEventListener("blob", (event) => {
+  const { body } = event.detail;
   const type = blobPool.value[body.digest].type;
   const blob = new Blob([body.data], { type: type });
   blobPool.value[body.digest] = {
@@ -31,26 +35,29 @@ function onBlob(body) {
     url: URL.createObjectURL(blob),
     type: type,
   };
-}
+});
 
-function onRequestBlob(body) {
-  this.send({
-    type: "blob",
+events.addEventListener("requestBlob", (event) => {
+  const { connection, body } = event.detail;
+  connection.send({
+    type: "event/blob",
     digest: body.digest,
     data: blobPool.value[body.digest].data,
   });
-}
+});
 
 function onReceiveData(body) {
-  if (body.type === "broadcast") return onBroadcast.call(this, body);
-  if (body.type === "blob") return onBlob.call(this, body);
-  if (body.type === "requestBlob") return onRequestBlob.call(this, body);
+  if (body.type.startsWith("event/")) {
+    const eventDetail = { detail: { connection: this, body: body } };
+    events.dispatchEvent(new CustomEvent(body.type.slice(6), eventDetail));
+    return;
+  }
 
   if (body.data instanceof ArrayBuffer) {
     body.url = URL.createObjectURL(new Blob([body.data], { type: body.type }));
     blobPool.value[body.digest] = { type: body.type };
     this.send({
-      type: "requestBlob",
+      type: "event/requestBlob",
       digest: body.digest,
     })
   }
@@ -77,7 +84,7 @@ function handleConnection(connection) {
     connections.value.push(this);
     connectingPeers.delete(this.peer);
     this.send({
-      type: "broadcast",
+      type: "event/broadcast",
       from: peer.value.id,
       data: connections.value.map((c) => c.peer),
     });
@@ -99,7 +106,7 @@ peer.value.on("open", function (id) {
 peer.value.on("connection", handleConnection);
 peer.value.on("disconnected", peer.value.reconnect);
 peer.value.on("error", onError);
-window.addEventListener("beforeunload", peer.value.destroy);
+window.addEventListener("beforeunload", () => peer.value.destroy());
 
 function removeClosedConnections() {
   for (let i = 0; i < connections.value.length; i++) {
@@ -110,6 +117,14 @@ function removeClosedConnections() {
     }
   }
 }
+
+stream.on("start", async function () {
+  for (let conn of connections.value) {
+    conn.send({
+      type: "event/mediaStream",
+    });
+  }
+});
 
 setInterval(removeClosedConnections, 3000);
 
