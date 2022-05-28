@@ -82,6 +82,7 @@ async function openMediaStream() {
       <video
         ref="myself"
         muted
+        class="position-absolute object-fit-cover"
         @click="
           showCallingModal = false;
           stream.stop();
