@@ -10,7 +10,11 @@ export const streaming = ref([]);
 const connectingPeers = new Set();
 const events = new EventTarget();
 
-peer.value = new Peer(Math.random().toString().slice(2, 11));
+const manualIdMatch = location.search.match(/m=([\da-f-]{6,})/);
+if (manualIdMatch)
+  peer.value = new Peer(manualIdMatch[1]);
+else
+  peer.value = new Peer(Math.random().toString().slice(2, 11));
 
 events.addEventListener("broadcast", (event) => {
   const { body } = event.detail;
@@ -91,7 +95,7 @@ function onReceiveData(body) {
 
 function onError(err) {
   messages.value.push({
-    id: Math.random().toString(36).substr(2),
+    id: Math.random().toString(36).substring(2),
     type: "text/plain",
     from: "System",
     data: "Error: " + err.message,
@@ -125,6 +129,7 @@ peer.value.on("open", function (id) {
     connectingPeers.add(id);
     handleConnection(peer.value.connect(peerIdMatch[1], { reliable: true }));
   }
+  // For sharing in wechat
   if (/micromessenger/i.test(navigator.userAgent))
     window.history.replaceState(null, null, `?p=${id}`);
 });

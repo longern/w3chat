@@ -19,6 +19,7 @@ function share() {
 
   const url = new URL(location.href);
   url.searchParams.set("p", props.peerId);
+  url.searchParams.delete("m");
 
   nativeShare.setShareData({
     title: "W3Chat",
