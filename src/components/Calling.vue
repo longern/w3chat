@@ -1,35 +1,48 @@
 <script setup>
-import stream from "@/composables/stream";
+import stream, { myself, incomings } from "@/composables/stream";
 
 defineProps({ modelValue: Boolean });
-defineEmits(["update:modelValue"]);
+const emit = defineEmits(["update:modelValue"]);
+
+function hangup() {
+  stream.stop();
+  for (const incoming of incomings.value)
+    if (incoming.connection)
+      incoming.connection.close();
+  incomings.value = [];
+  emit('update:modelValue', false);
+}
+
+stream.on("remove", () => {
+  if (!myself.value || !incomings.value.length)
+    emit('update:modelValue', false);
+});
 </script>
 
 <template>
   <div v-if="modelValue" class="fullscreen-modal">
-    <video
-      v-if="stream.active"
-      ref="myself"
-      muted
-      autoplay
-      :srcObject.prop="stream.selfStream"
-      class="position-absolute object-fit-cover"
-    ></video>
-    <video
-      v-for="st in stream.incomingStreams"
-      :key="st.id"
-      autoplay
-      :srcObject.prop="st"
-      class="incomings position-absolute object-fit-cover"
-    ></video>
+    <template v-if="myself">
+      <video
+        muted
+        autoplay
+        :srcObject.prop="myself"
+        class="position-absolute object-fit-cover"
+      ></video>
+    </template>
+    <template v-if="incomings.length">
+      <video
+        v-for="st in incomings"
+        :key="st.id"
+        autoplay
+        :srcObject.prop="st"
+        class="incomings position-absolute object-fit-cover"
+      ></video>
+    </template>
     <div class="calling-buttons">
       <button class="btn-icon hangup">
         <span
           class="mdi mdi-phone-hangup"
-          @click="
-            $emit('update:modelValue', false);
-            stream.stop();
-          "
+          @click="hangup"
         ></span>
       </button>
     </div>

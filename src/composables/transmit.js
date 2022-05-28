@@ -50,19 +50,23 @@ events.addEventListener("requestBlob", (event) => {
 events.addEventListener("streamStart", (event) => {
   const { connection } = event.detail;
   streaming.value.push(connection.peer);
-  connection.send({
-    type: "event/joinStream",
-  })
 });
 
+export function joinStream() {
+  for (const connection of connections.value)
+    if (streaming.value.includes(connection.peer))
+      connection.send({ type: "event/joinStream" });
+}
+
 events.addEventListener("streamEnd", (event) => {
-  const { connection } = event.detail;
+  const { connection, body } = event.detail;
   streaming.value.splice(streaming.value.indexOf(connection.peer), 1);
+  stream.removeIncoming(body.id);
 });
 
 events.addEventListener("joinStream", (event) => {
   const { connection } = event.detail;
-  peer.value.call(connection.peer, stream.selfStream);
+  peer.value.call(connection.peer, stream.myself.value);
 });
 
 function onReceiveData(body) {
@@ -107,7 +111,7 @@ function handleConnection(connection) {
       from: peer.value.id,
       data: connections.value.map((c) => c.peer),
     });
-    if (stream.active.value)
+    if (stream.myself.value)
       connection.send({ type: "event/streamStart" });
     for (const message of messages.value) {
       if (!message.private) this.send(message);
@@ -126,10 +130,9 @@ peer.value.on("open", function (id) {
 
 peer.value.on("call", async function (mediaConnection) {
   mediaConnection.answer(stream.selfStream);
-  mediaConnection.on("stream", function (mediaStream) {
-    const streamIds = stream.incomingStreams.map((s) => s.id);
-    if (streamIds.includes(mediaStream.id)) return;
-    stream.incomingStreams.push(mediaStream);
+  mediaConnection.on("stream", (mediaStream) => {
+    mediaStream.connection = mediaConnection;
+    stream.addIncoming(mediaStream)
   });
 });
 
@@ -157,10 +160,12 @@ stream.on("start", async function () {
   }
 });
 
-stream.on("end", async function () {
+stream.on("end", async function (event) {
+  const streamId = event.detail;
   for (let conn of connections.value) {
     conn.send({
       type: "event/streamEnd",
+      id: streamId,
     });
   }
 });
