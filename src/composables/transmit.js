@@ -125,6 +125,8 @@ peer.value.on("open", function (id) {
 peer.value.on("call", async function (mediaConnection) {
   mediaConnection.answer(stream.selfStream);
   mediaConnection.on("stream", function (mediaStream) {
+    const streamIds = stream.incomingStreams.map((s) => s.id);
+    if (streamIds.includes(mediaStream.id)) return;
     stream.incomingStreams.push(mediaStream);
   });
 });
@@ -148,6 +150,14 @@ stream.on("start", async function () {
   for (let conn of connections.value) {
     conn.send({
       type: "event/streamStart",
+    });
+  }
+});
+
+stream.on("end", async function () {
+  for (let conn of connections.value) {
+    conn.send({
+      type: "event/streamEnd",
     });
   }
 });

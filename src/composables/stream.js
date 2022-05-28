@@ -21,7 +21,7 @@ export default {
   stop() {
     if (this.selfStream) {
       this.selfStream.getTracks().forEach((track) => track.stop());
-      events.dispatchEvent(new CustomEvent("stop"));
+      events.dispatchEvent(new CustomEvent("end"));
       this.selfStream = null;
       this.active.value = false;
     }

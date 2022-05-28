@@ -1,12 +1,17 @@
 <script setup>
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
-import { ref } from "vue";
+import { ref, provide } from "vue";
 import Header from "./components/Header.vue";
+import Breadcrumb from "./components/Breadcrumb.vue";
 import Main from "./components/Main.vue";
 import Footer from "./components/Footer.vue";
+import Calling from "@/components/Calling.vue";
 
 import { sendMessage, peer, connections, messages } from "./composables/transmit";
+
+const showCallingModal = ref(false);
+provide("showCallingModal", showCallingModal);
 </script>
 
 <template>
@@ -14,8 +19,13 @@ import { sendMessage, peer, connections, messages } from "./composables/transmit
     :peer-id="peer ? peer.id : ''"
     :online="connections.length + (peer ? 1 : 0)"
   />
+  <Breadcrumb />
   <Main :messages="messages" />
   <Footer :disabled="!peer" @send="sendMessage" />
+
+  <Teleport to="body">
+    <Calling v-model="showCallingModal"/>
+  </Teleport>
 </template>
 
 <style>

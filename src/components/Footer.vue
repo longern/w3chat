@@ -1,15 +1,13 @@
 <script setup>
-import { ref, nextTick } from "vue";
+import { inject, ref } from "vue";
 import stream from "@/composables/stream";
-import Calling from "@/components/Calling.vue";
 
 const text = ref("");
 const showRecordModal = ref(false);
-const showCallingModal = ref(false);
+const showCallingModal = inject("showCallingModal");
 
 const input = ref(null);
 const image = ref(null);
-const myself = ref(null);
 
 const props = defineProps({
   disabled: Boolean,
@@ -33,9 +31,8 @@ function sendImage() {
 }
 
 async function openMediaStream() {
-  showCallingModal.value = true;
-  await nextTick();
   await stream.start();
+  showCallingModal.value = true;
 }
 </script>
 
@@ -74,10 +71,6 @@ async function openMediaStream() {
       </div>
     </div>
   </div>
-
-  <Teleport to="body">
-    <Calling v-model="showCallingModal"/>
-  </Teleport>
 </template>
 
 <style>
