@@ -125,7 +125,8 @@ peer.value.on("open", function (id) {
     connectingPeers.add(id);
     handleConnection(peer.value.connect(peerIdMatch[1], { reliable: true }));
   }
-  window.history.replaceState(null, null, `?p=${id}`);
+  if (/micromessenger/i.test(navigator.userAgent))
+    window.history.replaceState(null, null, `?p=${id}`);
 });
 
 peer.value.on("call", async function (mediaConnection) {
