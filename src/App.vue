@@ -21,11 +21,14 @@ import { sendMessage, peer, connections, messages, blobPool } from "./composable
 <style>
 @import "main.css";
 
+html, body, #app {
+  width: 100%;
+  height: 100%;
+}
+
 #app {
   display: flex;
   flex-direction: column;
-  width: 100vw;
-  height: 100vh;
   background-color: whitesmoke;
 }
 
