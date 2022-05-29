@@ -28,7 +28,12 @@ stream.on("remove", () => {
     @click="small = false"
   >
     <template v-if="myself">
-      <video muted autoplay :srcObject.prop="myself"></video>
+      <video
+        muted
+        autoplay
+        :srcObject.prop="myself"
+        :class="{ 'secondary-video': incomings.length }"
+      ></video>
     </template>
     <template v-if="incomings.length">
       <video
@@ -55,14 +60,10 @@ stream.on("remove", () => {
   position: absolute;
   top: 5%;
   right: 5%;
+  width: 30%;
+  height: 30%;
   z-index: 100;
   overflow: hidden;
-}
-
-.smallscreen-modal > video {
-  float: right;
-  max-width: 40%;
-  max-height: 40%;
 }
 
 .fullscreen-modal {
@@ -77,11 +78,24 @@ stream.on("remove", () => {
   overflow: auto;
 }
 
+.smallscreen-modal > video,
 .fullscreen-modal > video {
   position: absolute;
   object-fit: cover;
   width: 100%;
   height: 100%;
+}
+
+.smallscreen-modal > .secondary-video {
+  display: none;
+}
+
+.fullscreen-modal > .secondary-video {
+  top: 5%;
+  right: 5%;
+  width: 30%;
+  height: 30%;
+  z-index: 1;
 }
 
 .calling-buttons {
