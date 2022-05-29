@@ -10,6 +10,8 @@ export default {
   incomings,
 
   start() {
+    if (myself.value) return;
+    myself.value = "locked";
     return navigator.mediaDevices
       .getUserMedia({ video: true, audio: true })
       .then((stream) => {
