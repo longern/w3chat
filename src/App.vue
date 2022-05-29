@@ -48,6 +48,14 @@ html, body, #app {
   background-color: whitesmoke;
 }
 
+#app>* {
+  flex-shrink: 0;
+}
+
+#app>.main {
+  flex-shrink: 1;
+}
+
 .main {
   flex-grow: 1;
   overflow-y: auto;
