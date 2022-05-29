@@ -40,8 +40,12 @@ stream.on("remove", () => {
         v-for="st in incomings"
         :key="st.id"
         autoplay
+        controls
+        controlslist="nodownload nofullscreen noremoteplayback"
+        disablepictureinpicture
         :srcObject.prop="st"
         class="incomings"
+        onplay="this.removeAttribute('controls')"
       ></video>
     </template>
     <div v-if="!small" class="calling-buttons">
