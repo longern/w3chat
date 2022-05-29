@@ -52,6 +52,8 @@ function endRecord() {
           :class="{ 'record-button': true, recording: recording }"
           @mousedown="startRecord"
           @mouseup="endRecord"
+          @touchstart="startRecord"
+          @touchend="endRecord"
         >
           <span class="mdi mdi-microphone"></span>
         </button>
