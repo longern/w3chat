@@ -58,16 +58,22 @@ async function openMediaStream() {
 
     <!-- Second row (buttons) -->
     <div class="row button-group" style="margin: 4px 0; text-align: center">
-      <div class="col" @click="showRecordFooter = !showRecordFooter">
-        <span class="mdi mdi-microphone"></span>
+      <div class="col">
+        <button class="btn-text" @click="showRecordFooter = !showRecordFooter">
+          <span class="mdi mdi-microphone"></span>
+        </button>
       </div>
       <div class="col">
-        <span class="mdi mdi-image" @click="image.click()">
-          <input ref="image" type="file" hidden @change="sendImage" />
-        </span>
+        <button class="btn-text" @click="image.click()">
+          <span class="mdi mdi-image">
+            <input ref="image" type="file" hidden @change="sendImage" />
+          </span>
+        </button>
       </div>
       <div class="col">
-        <span class="mdi mdi-video" @click="openMediaStream"></span>
+        <button class="btn-text" @click="openMediaStream">
+          <span class="mdi mdi-video"></span>
+        </button>
       </div>
     </div>
   </div>
@@ -83,7 +89,11 @@ async function openMediaStream() {
   cursor: pointer;
 }
 
-.button-group span.mdi:active {
+.footer .btn-text {
+  padding: 0 8px;
+}
+
+.footer .btn-text:active > span {
   color: deepskyblue;
 }
 </style>

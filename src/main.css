@@ -3,7 +3,7 @@ body {
 }
 
 @media (max-width: 960px) {
-  body {
+  * {
     outline: none;
     -webkit-tap-highlight-color: transparent;
   }
@@ -111,4 +111,8 @@ button {
   border-radius: 16px;
   user-select: none;
   cursor: pointer;
+}
+
+.btn-text {
+  background: none;
 }
