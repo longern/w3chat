@@ -1,4 +1,10 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 
-createApp(App).mount('#app')
+const app = createApp(App)
+app.directive("visible", {
+    inserted(el, binding) {
+        el.style.visibility = binding.value ? "visible" : "hidden";
+    }
+})
+app.mount('#app')

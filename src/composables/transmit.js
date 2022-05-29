@@ -225,32 +225,28 @@ async function digestHex(blob) {
 }
 
 export async function sendMessage(message) {
-  let messageType = null;
-  let digest = null;
-
-  if (message instanceof Blob) {
-    messageType = message.type;
-    digest = await digestHex(message);
-    blobPool.value[digest] = {
-      data: message,
-      type: messageType,
-      url: URL.createObjectURL(message),
-    };
-  }
-  else messageType = "text/plain";
-
   const messageBody = {
     id: Math.random().toString(36).substring(2),
-    type: messageType,
+    type: message instanceof Blob ? message.type : "text/plain",
     from: peer.value.id,
     data: message,
     timestamp: Date.now(),
   };
-  if (messageType.startsWith("image/")) {
-    messageBody.data = await resizeImage(message);
-    messageBody.digest = digest;
-    messageBody.url = blobPool.value[digest].url;
+
+  if (message instanceof Blob) {
+    messageBody.digest = await digestHex(message);
+    const blobUrl = URL.createObjectURL(message);
+    blobPool.value[messageBody.digest] = {
+      data: message,
+      type: message.type,
+      url: blobUrl,
+    };
+    messageBody.url = blobUrl;
   }
+
+  // Create thumbnail for images.
+  if (messageBody.type.startsWith("image/"))
+    messageBody.data = await resizeImage(message);
 
   removeClosedConnections();
   for (let conn of connections.value) {

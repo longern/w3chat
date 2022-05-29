@@ -32,17 +32,26 @@ function share() {
 
 <template>
   <div class="header color-primary row">
+    <div class="col-auto btn">
+      <span class="mdi mdi-account"></span>
+    </div>
     <div class="col">
       <div v-text="verbosePeerId(peerId) || 'Connecting...'"></div>
       <div style="font-size: 8px"><span v-text="online"></span> online</div>
     </div>
-    <div v-if="!isWechat" class="col-auto btn" @click="share">
+    <div v-visible="!isWechat" class="col-auto btn" @click="share">
       <span class="mdi mdi-share"></span>
     </div>
   </div>
 </template>
 
 <style>
+.header {
+  padding: 16px 0;
+  text-align: center;
+  height: 1.5em;
+}
+
 .header > .btn {
   width: 48px;
 }

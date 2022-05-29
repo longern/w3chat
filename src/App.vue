@@ -6,10 +6,13 @@ import Header from "./components/Header.vue";
 import Breadcrumb from "./components/Breadcrumb.vue";
 import Main from "./components/Main.vue";
 import Footer from "./components/Footer.vue";
+import Record from "./components/Record.vue";
 import Calling from "@/components/Calling.vue";
 
 import { sendMessage, peer, connections, messages } from "./composables/transmit";
 
+const showRecordFooter = ref(false);
+provide("showRecordFooter", showRecordFooter);
 const showCallingModal = ref(false);
 provide("showCallingModal", showCallingModal);
 </script>
@@ -22,6 +25,9 @@ provide("showCallingModal", showCallingModal);
   <Breadcrumb />
   <Main :messages="messages" />
   <Footer :disabled="!peer" @send="sendMessage" />
+  <KeepAlive>
+    <Record v-if="showRecordFooter" @record="sendMessage" />
+  </KeepAlive>
 
   <Teleport to="body">
     <Calling v-model="showCallingModal"/>
@@ -40,12 +46,6 @@ html, body, #app {
   display: flex;
   flex-direction: column;
   background-color: whitesmoke;
-}
-
-.header {
-  padding: 16px 0;
-  text-align: center;
-  height: 1.5em;
 }
 
 .main {

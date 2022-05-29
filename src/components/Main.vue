@@ -2,9 +2,7 @@
 import { ref, onBeforeUpdate, onUpdated } from "vue";
 import { blobPool } from "@/composables/transmit";
 
-const props = defineProps({
-  messages: Array,
-});
+defineProps({ messages: Array });
 
 const main = ref(null);
 let scrollToBottom = false;
@@ -48,6 +46,12 @@ onUpdated(() => {
           >
             <img class="message" :src="message.url" />
           </a>
+          <template v-else-if="message.type.startsWith('audio/')">
+            <audio v-if="blobPool[message.digest].url" controls>
+              <source :src="blobPool[message.digest].url" />
+            </audio>
+            <audio v-else controls />
+          </template>
           <span
             v-if="message.digest && !blobPool[message.digest].url"
             class="mdi mdi-spin mdi-loading"

@@ -3,7 +3,7 @@ import { inject, ref } from "vue";
 import stream from "@/composables/stream";
 
 const text = ref("");
-const showRecordModal = ref(false);
+const showRecordFooter = inject("showRecordFooter");
 const showCallingModal = inject("showCallingModal");
 
 const input = ref(null);
@@ -58,7 +58,7 @@ async function openMediaStream() {
 
     <!-- Second row (buttons) -->
     <div class="row button-group" style="margin: 4px 0; text-align: center">
-      <div class="col">
+      <div class="col" @click="showRecordFooter = !showRecordFooter">
         <span class="mdi mdi-microphone"></span>
       </div>
       <div class="col">
