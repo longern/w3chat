@@ -16,7 +16,7 @@ function hangup() {
 }
 
 stream.on("remove", () => {
-  if (!myself.value || !incomings.value.length)
+  if (!myself.value && !incomings.value.length)
     emit("update:modelValue", false);
 });
 </script>
