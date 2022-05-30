@@ -1,16 +1,53 @@
 <script setup lang="ts">
 import { inject } from "vue";
-import type { Ref } from 'vue';
+import type { Ref } from "vue";
+
+import { profile } from "@/composables/state";
+import { resizeImage } from "@/composables/utils";
 
 const showSidebar = inject<Ref<boolean>>("showSidebar");
+
+async function uploadAvatar() {
+  const avatarInput = <HTMLInputElement>(
+    document.getElementById("upload-avatar")
+  );
+  if (!avatarInput.files) return;
+
+  const imageFile = avatarInput.files[0];
+  const imageBlob = new Blob([imageFile], { type: imageFile.type });
+  const resizedImage = await resizeImage(imageBlob, { width: 48, height: 48 });
+
+  // Convert resizedImage to data URL
+  const reader = new FileReader();
+  reader.readAsDataURL(resizedImage);
+  const dataUrl = await new Promise((resolve, reject) => {
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+  });
+
+  profile.value.avatar = dataUrl;
+
+  avatarInput.value = null;
+}
 </script>
 
 <template>
   <Transition name="from-left" appear>
     <div class="sidebar">
-      <button class="btn-text" @click="showSidebar = false">
+      <button class="close btn-text size-48" @click="showSidebar = false">
         <span class="mdi mdi-close"></span>
       </button>
+      <button class="btn-icon rounded" onclick="this.nextElementSibling.click()">
+        <img v-if="profile.avatar" :src="profile.avatar" />
+        <span v-else class="mdi mdi-account size-48"></span>
+      </button>
+      <input
+        id="upload-avatar"
+        type="file"
+        accept="image/*"
+        hidden
+        @change="uploadAvatar"
+      />
     </div>
   </Transition>
 </template>
@@ -23,6 +60,12 @@ const showSidebar = inject<Ref<boolean>>("showSidebar");
   height: 100%;
   left: 0;
   top: 0;
+}
+
+.sidebar button.close {
+  position: absolute;
+  top: 0;
+  right: 0;
 }
 
 .from-left-enter-active,
@@ -41,5 +84,4 @@ const showSidebar = inject<Ref<boolean>>("showSidebar");
 .from-left-leave-to {
   left: -100%;
 }
-
 </style>

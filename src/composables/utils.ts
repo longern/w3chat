@@ -1,6 +1,5 @@
-export async function resizeImage(imageBlob: Blob) {
+export async function resizeImage(imageBlob: Blob, config: {width?: number, height?: number, sizeLimit?: number}) {
   const blobUrl = URL.createObjectURL(imageBlob);
-  const SIZE_LIMIT = 240 * 180;
   const img: HTMLImageElement = await new Promise((resolve) => {
     const img = document.createElement("img");
     img.onload = () => resolve(img);
@@ -8,9 +7,14 @@ export async function resizeImage(imageBlob: Blob) {
   });
 
   const canvas = document.createElement("canvas");
-  const resizeRatio = Math.sqrt(SIZE_LIMIT / (img.width * img.height));
-  canvas.width = resizeRatio * img.width;
-  canvas.height = resizeRatio * img.height;
+  if (config.sizeLimit) {
+    const resizeRatio = Math.sqrt(config.sizeLimit / (img.width * img.height));
+    canvas.width = resizeRatio * img.width;
+    canvas.height = resizeRatio * img.height;
+  } else {
+    canvas.width = config.width;
+    canvas.height = config.height;
+  }
   const ctx = canvas.getContext("2d");
   ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
   const resizedBlob: Blob = await new Promise((resolve) => canvas.toBlob(resolve));

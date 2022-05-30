@@ -226,7 +226,7 @@ export async function sendMessage(message) {
 
   // Create thumbnail for images.
   if (messageBody.type.startsWith("image/"))
-    messageBody.data = await resizeImage(message);
+    messageBody.data = await resizeImage(message, { sizeLimit: 240 * 180 });
 
   removeClosedConnections();
   for (let conn of connections.value) {

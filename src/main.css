@@ -22,6 +22,14 @@ body {
   position: absolute;
 }
 
+.inline-block {
+  display: inline-block;
+}
+
+.inline-flex {
+  display: inline-flex;
+}
+
 .fill-width {
   width: 100%;
 }
@@ -87,6 +95,38 @@ body {
   height: 100%;
 }
 
+.size-16 {
+  width: 16px;
+  height: 16px;
+}
+
+.size-32 {
+  width: 32px;
+  height: 32px;
+}
+
+.size-48 {
+  width: 48px;
+  height: 48px;
+}
+
+.size-64 {
+  width: 64px;
+  height: 64px;
+}
+
+button.size-16 > span.mdi {
+  font-size: 12px;
+}
+
+button.size-32 > span.mdi {
+  font-size: 24px;
+}
+
+button.size-48 > span.mdi {
+  font-size: 32px;
+}
+
 .color-primary {
   background-color: #4285f4;
   color: white;
@@ -102,6 +142,7 @@ body {
 
 .rounded {
   border-radius: 50%;
+  overflow: hidden;
 }
 
 input {
@@ -111,13 +152,21 @@ input {
 }
 
 button {
-  padding: 8px 12px;
   border: none;
   border-radius: 16px;
   user-select: none;
   cursor: pointer;
 }
 
+button > span.mdi {
+  margin: auto;
+}
+
 .btn-text {
   background: none;
+}
+
+.btn-icon {
+  display: flex;
+  padding: 0;
 }

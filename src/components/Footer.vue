@@ -51,7 +51,7 @@ async function openMediaStream() {
             :disabled="disabled"
             class="send-button color-primary"
           >
-            Send
+            <span>Send</span>
           </button>
         </div>
       </div>
@@ -83,6 +83,7 @@ async function openMediaStream() {
 <style>
 .send-button {
   margin-left: 24px;
+  padding: 8px 12px;
 }
 
 .button-group span.mdi {

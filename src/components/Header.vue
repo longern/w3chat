@@ -3,6 +3,8 @@ import { inject, ref } from "vue";
 import type { Ref } from 'vue';
 import NativeShare from "nativeshare";
 
+import { profile } from "@/composables/state"
+
 const props = defineProps({
   peerId: String,
   online: Number,
@@ -34,8 +36,9 @@ function share() {
 
 <template>
   <div class="header color-primary row">
-    <button class="col-auto btn-text" @click="showSidebar = true">
-      <span class="mdi mdi-account"></span>
+    <button class="col-auto btn-icon rounded" @click="showSidebar = true">
+      <img v-if="profile.avatar" :src="profile.avatar" />
+      <span v-else class="mdi mdi-account size-48"></span>
     </button>
     <div class="col">
       <div class="row flex-column fill-height">
@@ -45,7 +48,7 @@ function share() {
         <div class="flex-grow-1"></div>
       </div>
     </div>
-    <button v-visible="!isWechat" class="col-auto btn-text" @click="share">
+    <button v-visible="!isWechat" class="col-auto btn-icon size-48" @click="share">
       <span class="mdi mdi-share"></span>
     </button>
   </div>
@@ -54,11 +57,11 @@ function share() {
 <style>
 .header {
   text-align: center;
+  padding: 8px;
 }
 
 .header > button {
-  width: 48px;
-  height: 48px;
   color: white;
+  background: none;
 }
 </style>

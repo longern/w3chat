@@ -49,10 +49,10 @@ stream.on("remove", () => {
       ></video>
     </template>
     <div v-if="!small" class="calling-buttons">
-      <button class="btn-icon">
+      <button class="btn-icon size-48">
         <span class="mdi mdi-resize" @click.stop="small = !small"></span>
       </button>
-      <button class="btn-icon hangup">
+      <button class="hangup btn-icon size-48">
         <span class="mdi mdi-phone-hangup" @click="hangup"></span>
       </button>
     </div>
