@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { inject, ref } from "vue";
+import type { Ref } from 'vue';
 import NativeShare from "nativeshare";
 
 const props = defineProps({
@@ -8,6 +9,7 @@ const props = defineProps({
 });
 
 const isWechat = ref(/micromessenger/i.test(navigator.userAgent));
+const showSidebar = inject<Ref<boolean>>("showSidebar");
 
 function verbosePeerId(peerId: string) {
   if (!peerId) return "";
@@ -32,27 +34,31 @@ function share() {
 
 <template>
   <div class="header color-primary row">
-    <div class="col-auto btn">
+    <button class="col-auto btn-text" @click="showSidebar = true">
       <span class="mdi mdi-account"></span>
-    </div>
+    </button>
     <div class="col">
-      <div v-text="verbosePeerId(peerId) || 'Connecting...'"></div>
-      <div style="font-size: 8px"><span v-text="online"></span> online</div>
+      <div class="row flex-column fill-height">
+        <div class="flex-grow-1"></div>
+        <div v-text="verbosePeerId(peerId) || 'Connecting...'"></div>
+        <div style="font-size: 8px"><span v-text="online"></span> online</div>
+        <div class="flex-grow-1"></div>
+      </div>
     </div>
-    <div v-visible="!isWechat" class="col-auto btn" @click="share">
+    <button v-visible="!isWechat" class="col-auto btn-text" @click="share">
       <span class="mdi mdi-share"></span>
-    </div>
+    </button>
   </div>
 </template>
 
 <style>
 .header {
-  padding: 16px 0;
   text-align: center;
-  height: 1.5em;
 }
 
-.header > .btn {
+.header > button {
   width: 48px;
+  height: 48px;
+  color: white;
 }
 </style>

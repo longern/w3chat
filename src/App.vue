@@ -2,6 +2,7 @@
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
 import { ref, provide } from "vue";
+import Sidebar from "./components/Sidebar.vue";
 import Header from "./components/Header.vue";
 import Breadcrumb from "./components/Breadcrumb.vue";
 import Main from "./components/Main.vue";
@@ -11,6 +12,8 @@ import Calling from "@/components/Calling.vue";
 
 import { sendMessage, peer, connections, messages } from "./composables/transmit";
 
+const showSidebar = ref(false);
+provide("showSidebar", showSidebar);
 const showRecordFooter = ref(false);
 provide("showRecordFooter", showRecordFooter);
 const showCallingModal = ref(false);
@@ -18,6 +21,8 @@ provide("showCallingModal", showCallingModal);
 </script>
 
 <template>
+  <Sidebar v-show="showSidebar" />
+
   <Header
     :peer-id="peer ? peer.id : ''"
     :online="connections.length + (peer ? 1 : 0)"
