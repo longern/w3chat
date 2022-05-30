@@ -34,20 +34,23 @@ async function uploadAvatar() {
 <template>
   <Transition name="from-left" appear>
     <div class="sidebar">
-      <button class="close btn-text size-48" @click="showSidebar = false">
-        <span class="mdi mdi-close"></span>
-      </button>
-      <button class="btn-icon rounded" onclick="this.nextElementSibling.click()">
-        <img v-if="profile.avatar" :src="profile.avatar" />
-        <span v-else class="mdi mdi-account size-48"></span>
-      </button>
-      <input
-        id="upload-avatar"
-        type="file"
-        accept="image/*"
-        hidden
-        @change="uploadAvatar"
-      />
+      <div class="row" style="padding: 32px 16px">
+        <button class="close btn-text size-48" @click="showSidebar = false">
+          <span class="mdi mdi-close"></span>
+        </button>
+        <button class="btn-icon rounded size-48 flex-shrink-0" onclick="this.nextElementSibling.click()">
+          <img v-if="profile.avatar" :src="profile.avatar" />
+          <span v-else class="mdi mdi-account"></span>
+        </button>
+        <input
+          id="upload-avatar"
+          type="file"
+          accept="image/*"
+          hidden
+          @change="uploadAvatar"
+        />
+        <input v-model="profile.nickname" placeholder="Nickname..."/>
+      </div>
     </div>
   </Transition>
 </template>
@@ -60,12 +63,6 @@ async function uploadAvatar() {
   height: 100%;
   left: 0;
   top: 0;
-}
-
-.sidebar button.close {
-  position: absolute;
-  top: 0;
-  right: 0;
 }
 
 .from-left-enter-active,
@@ -83,5 +80,15 @@ async function uploadAvatar() {
 .from-left-enter,
 .from-left-leave-to {
   left: -100%;
+}
+
+.sidebar button.close {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.sidebar input {
+  font-size: 16px;
 }
 </style>
