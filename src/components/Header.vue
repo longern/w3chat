@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref } from "vue";
 import NativeShare from "nativeshare";
 
@@ -9,7 +9,7 @@ const props = defineProps({
 
 const isWechat = ref(/micromessenger/i.test(navigator.userAgent));
 
-function verbosePeerId(peerId) {
+function verbosePeerId(peerId: string) {
   if (!peerId) return "";
   return peerId.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 };

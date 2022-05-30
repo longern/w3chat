@@ -1,10 +1,11 @@
-<script setup>
+<script setup lang="ts">
 import { inject, ref } from "vue";
+import type { Ref } from 'vue'
 import stream from "@/composables/stream";
 
 const text = ref("");
-const showRecordFooter = inject("showRecordFooter");
-const showCallingModal = inject("showCallingModal");
+const showRecordFooter = inject<Ref<boolean>>("showRecordFooter");
+const showCallingModal = inject<Ref<boolean>>("showCallingModal");
 
 const input = ref(null);
 const image = ref(null);

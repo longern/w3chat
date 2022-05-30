@@ -1,12 +1,12 @@
-<script setup>
+<script setup lang="ts">
 import { ref, onActivated, onDeactivated } from "vue";
 
 const emit = defineEmits(["record"]);
 
 const recording = ref(false);
-let audioStream = null;
-let recorder = null;
-let chunks = [];
+let audioStream: MediaStream = null;
+let recorder: MediaRecorder = null;
+let chunks: Blob[] = [];
 
 onActivated(() => {
   navigator.mediaDevices

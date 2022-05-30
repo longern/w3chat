@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref } from "vue";
 import stream, { myself, incomings } from "@/composables/stream";
 
@@ -10,7 +10,7 @@ const small = ref(false);
 function hangup() {
   stream.stop();
   for (const incoming of incomings.value)
-    if (incoming.connection) incoming.connection.close();
+    if ((incoming as any).connection) (incoming as any).connection.close();
   incomings.value = [];
   emit("update:modelValue", false);
 }
