@@ -1,6 +1,6 @@
 import { Ref, watch } from "vue"
 
-export function storeLocal(key, variable: Ref<any>) {
+export function storeLocal<T = any>(key: string, variable: Ref<T>) {
   if (localStorage.getItem(key) !== null) {
     variable.value = JSON.parse(localStorage.getItem(key));
   }

@@ -6,3 +6,11 @@ export const profile = storeLocal("profile", ref({
   avatar: "",
   wallet: "",
 }))
+
+export const users = ref({});
+
+// Keypair for signing user profile
+export const signKeypair = storeLocal("signKeypair", ref({
+  publicKey: {},
+  privateKey: {},
+}));

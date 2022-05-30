@@ -1,6 +1,8 @@
 <script setup>
-import { ref, onBeforeUpdate, onUpdated } from "vue";
-import { blobPool } from "@/composables/transmit";
+import { onBeforeUpdate, onUpdated, ref } from "vue";
+
+import { blobPool, peer } from "@/composables/transmit";
+import { users } from "@/composables/state";
 
 defineProps({ messages: Array });
 
@@ -25,14 +27,28 @@ onUpdated(() => {
 
 <template>
   <div ref="main" class="main">
-    <div class="row" v-for="(message, i) in messages" :key="i">
+    <div
+      class="row"
+      v-for="(message, i) in messages"
+      :key="i"
+      :class="{ myself: message.from === peer.id }"
+    >
       <div class="col-auto">
         <div class="avatar rounded">
-          <span class="mdi mdi-account"></span>
+          <img
+            v-if="(users[message.from] || {}).avatar"
+            :src="users[message.from].avatar"
+            class="fill-width"
+          />
+          <span v-else class="mdi mdi-account"></span>
         </div>
       </div>
       <div class="col">
-        <div class="from" v-text="message.from || 'I'"></div>
+        <div class="from">
+          <span
+            v-text="(users[message.from] || {}).nickname || message.from || 'I'"
+          ></span>
+        </div>
         <div class="fill-width">
           <span
             v-if="message.type === 'text/plain'"
@@ -65,6 +81,16 @@ onUpdated(() => {
 <style>
 .main {
   padding: 8px;
+}
+
+.myself {
+  flex-direction: row-reverse;
+  text-align: right;
+}
+
+.myself .avatar {
+  margin-left: 8px;
+  margin-right: 0;
 }
 
 .message {

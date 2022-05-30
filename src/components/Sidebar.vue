@@ -2,7 +2,7 @@
 import { inject } from "vue";
 import type { Ref } from "vue";
 
-import { profile } from "@/composables/state";
+import { profile, signKeypair } from "@/composables/state";
 import { resizeImage } from "@/composables/utils";
 
 const showSidebar = inject<Ref<boolean>>("showSidebar");
@@ -20,14 +20,33 @@ async function uploadAvatar() {
   // Convert resizedImage to data URL
   const reader = new FileReader();
   reader.readAsDataURL(resizedImage);
-  const dataUrl = await new Promise((resolve, reject) => {
-    reader.onload = () => resolve(reader.result);
+  const dataUrl: string = await new Promise((resolve, reject) => {
+    reader.onload = () => resolve(<string>reader.result);
     reader.onerror = reject;
   });
 
   profile.value.avatar = dataUrl;
 
   avatarInput.value = null;
+}
+
+async function changeNickname() {
+  // Generate private key
+  const { privateKey, publicKey } = await window.crypto.subtle.generateKey(
+    {
+      name: "RSASSA-PKCS1-v1_5",
+      modulusLength: 2048,
+      publicExponent: new Uint8Array([1, 0, 1]),
+      hash: "SHA-256",
+    },
+    true,
+    ["sign", "verify"]
+  );
+
+  signKeypair.value = {
+    privateKey: await window.crypto.subtle.exportKey("jwk", privateKey),
+    publicKey: await window.crypto.subtle.exportKey("jwk", publicKey),
+  };
 }
 </script>
 
@@ -38,7 +57,10 @@ async function uploadAvatar() {
         <button class="close btn-text size-48" @click="showSidebar = false">
           <span class="mdi mdi-close"></span>
         </button>
-        <button class="btn-icon rounded size-48 flex-shrink-0" onclick="this.nextElementSibling.click()">
+        <button
+          class="btn-icon rounded size-48 flex-shrink-0"
+          onclick="this.nextElementSibling.click()"
+        >
           <img v-if="profile.avatar" :src="profile.avatar" />
           <span v-else class="mdi mdi-account"></span>
         </button>
@@ -49,7 +71,11 @@ async function uploadAvatar() {
           hidden
           @change="uploadAvatar"
         />
-        <input v-model="profile.nickname" placeholder="Nickname..."/>
+        <input
+          v-model="profile.nickname"
+          placeholder="Nickname..."
+          @change="changeNickname"
+        />
       </div>
     </div>
   </Transition>

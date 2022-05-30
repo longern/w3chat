@@ -1,6 +1,9 @@
 import { ref } from "vue";
+
+import { profile, users } from "@/composables/state";
 import stream from "@/composables/stream";
 import { digestHex, resizeImage } from "@/composables/utils";
+import { signKeypair } from "./state";
 
 export const peer = ref(null);
 export const messages = ref([]);
@@ -33,6 +36,11 @@ events.addEventListener("broadcast", (event) => {
       connectingPeers.add(pid);
       handleConnection(peer.value.connect(pid, { reliable: true }));
     }
+});
+
+events.addEventListener("profile", (event) => {
+  const { connection, body } = event.detail;
+  users.value[connection.peer] = body.profile;
 });
 
 events.addEventListener("blob", (event) => {
@@ -141,6 +149,33 @@ function handleConnection(connection) {
     if (stream.myself.value)
       connection.send({ type: "event/streamStart" });
 
+    // Send user profile
+    const timestamp = Date.now();
+    const callback = (signature) => {
+      connection.send({
+        type: "event/profile",
+        profile: profile.value,
+        signature: signature,
+        timestamp: timestamp,
+      });
+    };
+
+    if (profile.value.nickname) {
+      crypto.subtle.importKey(
+        "jwk",
+        signKeypair.value.privateKey,
+        { name: "RSASSA-PKCS1-v1_5", hash: { name: "SHA-256" } },
+        false,
+        ["sign"]
+      ).then(privateKey => {
+        const encoder = new TextEncoder();
+        const encoded = encoder.encode(`${profile.value.nickname}\n${timestamp}`);
+        crypto.subtle.sign("RSASSA-PKCS1-v1_5", privateKey, encoded).then(callback);
+      });
+    } else {
+      callback(null);
+    }
+
     // Private messages (e.g. from the system) are not broadcasted.
     for (const message of messages.value) {
       if (!message.private) this.send(message);
@@ -155,6 +190,8 @@ peer.value.on("open", function (id) {
     connectingPeers.add(id);
     handleConnection(peer.value.connect(peerIdMatch[1], { reliable: true }));
   }
+
+  users.value[id] = profile.value;
 
   // For sharing in wechat, replace the current URL with peer ID.
   if (/micromessenger/i.test(navigator.userAgent))
