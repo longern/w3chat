@@ -49,12 +49,14 @@ stream.on("remove", () => {
       ></video>
     </template>
     <div v-if="!small" class="calling-buttons">
+      <div class="flex-grow-1" />
       <button class="btn-icon size-48">
         <span class="mdi mdi-resize" @click.stop="small = !small"></span>
       </button>
       <button class="hangup btn-icon size-48">
         <span class="mdi mdi-phone-hangup" @click="hangup"></span>
       </button>
+      <div class="flex-grow-1" />
     </div>
   </div>
 </template>
@@ -103,11 +105,11 @@ stream.on("remove", () => {
 }
 
 .calling-buttons {
+  display: flex;
   position: absolute;
   bottom: 0;
   width: 100%;
   padding: 16px 0;
-  text-align: center;
 }
 
 .calling-buttons > button {
