@@ -36,9 +36,9 @@ function share() {
 
 <template>
   <div class="header color-primary row">
-    <button class="col-auto btn-icon rounded" @click="showSidebar = true">
+    <button class="col-auto btn-icon rounded size-48" @click="showSidebar = true">
       <img v-if="profile.avatar" :src="profile.avatar" />
-      <span v-else class="mdi mdi-account size-48"></span>
+      <span v-else class="mdi mdi-account"></span>
     </button>
     <div class="col">
       <div class="row flex-column fill-height">
