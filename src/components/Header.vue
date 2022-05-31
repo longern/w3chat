@@ -15,7 +15,7 @@ function verbosePeerId(peerId: string) {
 }
 
 const onlineNumber = computed(() => {
-  const isAnyOpen = (conns) => conns.some((conn) => conn.open);
+  const isAnyOpen = (conns) => conns.some((conn) => conn.open && conn.type === "data");
   return Object.values(peer.value.connections).filter(isAnyOpen).length + 1;
 });
 

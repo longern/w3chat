@@ -9,10 +9,12 @@
   },
   "dependencies": {
     "nativeshare": "^2.1.5",
+    "peerjs": "^1.4.6",
     "vue": "^3.2.25"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^2.3.3",
+    "rollup-plugin-external-globals": "^0.6.1",
     "vite": "^2.9.9"
   }
 }

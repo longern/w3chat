@@ -1,14 +1,11 @@
 import { ref, shallowRef, triggerRef } from "vue";
+import { Peer } from "peerjs";
 
 import { profile, signKeypair, users } from "./state";
 import stream from "./stream";
 import { digestHex, resizeImage } from "./utils";
 
-export const peer = shallowRef({
-  id: undefined,
-  open: false,
-  connections: {},
-});
+export const peer = shallowRef({ connections: {} } as Peer);
 export const messages = ref([]);
 export const connections = ref([]);
 export const blobPool = ref({});
@@ -81,14 +78,15 @@ events.addEventListener("streamEnd", (event) => {
   stream.removeIncoming(body.id);
 });
 
-events.addEventListener("joinStream", (event) => {
+events.addEventListener("joinStream", ((event: CustomEvent) => {
   const { connection } = event.detail;
   const call = peer.value.call(connection.peer, stream.myself.value);
   call.on("stream", (mediaStream) => {
+    triggerRef(peer);
     mediaStream.connection = call;
     stream.addIncoming(mediaStream)
   });
-});
+}) as EventListener);
 
 function onReceiveData(body) {
   // `event/` prefix is used to distinguish messages from other types.
@@ -205,6 +203,7 @@ peer.value.on("open", function (id) {
 peer.value.on("call", async function (mediaConnection) {
   mediaConnection.answer(stream.myself.value);
   mediaConnection.on("stream", (mediaStream) => {
+    triggerRef(peer);
     mediaStream.connection = mediaConnection;
     stream.addIncoming(mediaStream)
   });
@@ -246,8 +245,8 @@ stream.on("end", async function (event) {
   }
 });
 
-export async function sendMessage(message) {
-  const messageBody = {
+export async function sendMessage(message: string | Blob) {
+  const messageBody: Record<string, any> = {
     id: Math.random().toString(36).substring(2),
     type: message instanceof Blob ? message.type : "text/plain",
     from: peer.value.id,
@@ -264,11 +263,11 @@ export async function sendMessage(message) {
       url: blobUrl,
     };
     messageBody.url = blobUrl;
-  }
 
-  // Create thumbnail for images.
-  if (messageBody.type.startsWith("image/"))
-    messageBody.data = await resizeImage(message, { sizeLimit: 240 * 180 });
+    // Create thumbnail for images.
+    if (messageBody.type.startsWith("image/"))
+      messageBody.data = await resizeImage(message, { sizeLimit: 240 * 180 });
+  }
 
   removeClosedConnections();
   for (let conn of connections.value) {

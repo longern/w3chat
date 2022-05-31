@@ -46,7 +46,7 @@ export default {
     events.dispatchEvent(new CustomEvent("remove", { detail: streamId }));
   },
 
-  on(event: string, callback: EventListenerOrEventListenerObject) {
-    events.addEventListener(event, callback);
+  on(event: string, callback: { (evt: CustomEvent): void; }) {
+    events.addEventListener(event, callback as EventListener);
   }
 }
