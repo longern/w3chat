@@ -12,15 +12,25 @@ export const blobPool = ref({});
 export const streaming = ref([]);
 
 const connectingPeers = new Set();
-const events = new EventTarget();
 const MAX_CONNECTIONS = 32;
 
 const manualIdMatch = location.search.match(/m=([\da-f-]{6,})/);
 const proposedID = manualIdMatch ? manualIdMatch[1] : Math.random().toString().slice(2, 11);
 peer.value = new Peer(proposedID);
 
-events.addEventListener("broadcast", (event) => {
-  const { body } = event.detail;
+class TransmitEventTarget extends EventTarget {
+  public on(event: string, callback: { (detail: any): void }) {
+    super.addEventListener(event, ((event: CustomEvent) => {
+      const { detail } = event;
+      callback(detail);
+    }) as EventListener);
+  }
+}
+
+const events = new TransmitEventTarget();
+
+events.on("broadcast", (detail) => {
+  const { body } = detail;
   const connectedPeers = new Set(connections.value.map((c) => c.peer));
   // When building the complete graph, peers may be broadcasted more than once.
   // Skip if the peer is already connected or connecting.
@@ -36,13 +46,13 @@ events.addEventListener("broadcast", (event) => {
     }
 });
 
-events.addEventListener("profile", (event) => {
-  const { connection, body } = event.detail;
+events.on("profile", (detail) => {
+  const { connection, body } = detail;
   users.value[connection.peer] = body.profile;
 });
 
-events.addEventListener("blob", (event) => {
-  const { body } = event.detail;
+events.on("blob", (detail) => {
+  const { body } = detail;
   const type = blobPool.value[body.digest].type;
   const blob = new Blob([body.data], { type: type });
   blobPool.value[body.digest] = {
@@ -52,8 +62,8 @@ events.addEventListener("blob", (event) => {
   };
 });
 
-events.addEventListener("requestBlob", (event) => {
-  const { connection, body } = event.detail;
+events.on("requestBlob", (detail) => {
+  const { connection, body } = detail;
   connection.send({
     type: "event/blob",
     digest: body.digest,
@@ -61,8 +71,8 @@ events.addEventListener("requestBlob", (event) => {
   });
 });
 
-events.addEventListener("streamStart", (event) => {
-  const { connection } = event.detail;
+events.on("streamStart", (detail) => {
+  const { connection } = detail;
   streaming.value.push(connection.peer);
 });
 
@@ -72,21 +82,21 @@ export function joinStream() {
       connection.send({ type: "event/joinStream" });
 }
 
-events.addEventListener("streamEnd", (event) => {
-  const { connection, body } = event.detail;
+events.on("streamEnd", (detail) => {
+  const { connection, body } = detail;
   streaming.value.splice(streaming.value.indexOf(connection.peer), 1);
   stream.removeIncoming(body.id);
 });
 
-events.addEventListener("joinStream", ((event: CustomEvent) => {
-  const { connection } = event.detail;
+events.on("joinStream", detail => {
+  const { connection } = detail;
   const call = peer.value.call(connection.peer, stream.myself.value);
   call.on("stream", (mediaStream) => {
     triggerRef(peer);
     mediaStream.connection = call;
     stream.addIncoming(mediaStream)
   });
-}) as EventListener);
+});
 
 function onReceiveData(body) {
   // `event/` prefix is used to distinguish messages from other types.

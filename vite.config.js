@@ -6,9 +6,7 @@ import externalGlobals from "rollup-plugin-external-globals";
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    externalGlobals({
-      peerjs: "peerjs",
-    }),
+    externalGlobals({ peerjs: "peerjs" }, { include: ["**/*.ts"] }),
     vue(),
   ],
   resolve: {
