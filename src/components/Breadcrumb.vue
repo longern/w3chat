@@ -26,6 +26,7 @@ const showCallingModal = inject("showCallingModal");
 <style>
 .breadcrumb {
   position: relative;
+  z-index: 1;
 }
 
 .breadcrumb--wrap {
