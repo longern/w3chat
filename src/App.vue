@@ -32,14 +32,16 @@ provide("showCallingModal", showCallingModal);
   </KeepAlive>
 
   <Teleport to="body">
-    <Calling v-model="showCallingModal"/>
+    <Calling v-model="showCallingModal" />
   </Teleport>
 </template>
 
 <style>
 @import "main.css";
 
-html, body, #app {
+html,
+body,
+#app {
   width: 100%;
   height: 100%;
 }
@@ -50,11 +52,11 @@ html, body, #app {
   background-color: whitesmoke;
 }
 
-#app>* {
+#app > * {
   flex-shrink: 0;
 }
 
-#app>.main {
+#app > .main {
   flex-shrink: 1;
 }
 

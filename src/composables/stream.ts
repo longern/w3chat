@@ -15,8 +15,10 @@ export default {
     if (myself.value) return;
     myselfLock = true;
     try {
-      const stream = await navigator.mediaDevices
-        .getUserMedia({ video: true, audio: true });
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true,
+      });
       myself.value = stream;
       events.dispatchEvent(new CustomEvent("start", { detail: myself.value }));
     } finally {
@@ -46,7 +48,7 @@ export default {
     events.dispatchEvent(new CustomEvent("remove", { detail: streamId }));
   },
 
-  on(event: string, callback: { (evt: CustomEvent): void; }) {
+  on(event: string, callback: { (evt: CustomEvent): void }) {
     events.addEventListener(event, callback as EventListener);
-  }
-}
+  },
+};

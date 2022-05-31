@@ -1,10 +1,10 @@
-<script setup>
+<script setup lang="ts">
 import { onBeforeUpdate, onUpdated, ref } from "vue";
 
 import { blobPool, peer } from "@/composables/transmit";
 import { users } from "@/composables/state";
 
-defineProps({ messages: Array });
+defineProps<{ messages: Array<Record<string, any>> }>();
 
 const main = ref(null);
 let scrollToBottom = false;

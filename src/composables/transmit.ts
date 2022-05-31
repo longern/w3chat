@@ -15,7 +15,9 @@ const connectingPeers = new Set();
 const MAX_CONNECTIONS = 32;
 
 const manualIdMatch = location.search.match(/m=([\da-f-]{6,})/);
-const proposedID = manualIdMatch ? manualIdMatch[1] : Math.random().toString().slice(2, 11);
+const proposedID = manualIdMatch
+  ? manualIdMatch[1]
+  : Math.random().toString().slice(2, 11);
 peer.value = new Peer(proposedID);
 
 class TransmitEventTarget extends EventTarget {
@@ -88,13 +90,13 @@ events.on("streamEnd", (detail) => {
   stream.removeIncoming(body.id);
 });
 
-events.on("joinStream", detail => {
+events.on("joinStream", (detail) => {
   const { connection } = detail;
   const call = peer.value.call(connection.peer, stream.myself.value);
   call.on("stream", (mediaStream) => {
     triggerRef(peer);
     mediaStream.connection = call;
-    stream.addIncoming(mediaStream)
+    stream.addIncoming(mediaStream);
   });
 });
 
@@ -113,7 +115,7 @@ function onReceiveData(body) {
     this.send({
       type: "event/requestBlob",
       digest: body.digest,
-    })
+    });
   }
 
   // Filter out repeated messages
@@ -136,7 +138,8 @@ function onError(err) {
 function handleConnection(connection) {
   // Walkaround that manually fires the `close` event.
   connection.peerConnection.addEventListener("connectionstatechange", () => {
-    if (["failed", "disconnected"].includes(connection.peerConnection.connectionState))
+    const connectionState = connection.peerConnection.connectionState;
+    if (["failed", "disconnected"].includes(connectionState))
       connection.close();
   });
 
@@ -156,8 +159,7 @@ function handleConnection(connection) {
     });
 
     // If this user is streaming, notify the new peer.
-    if (stream.myself.value)
-      connection.send({ type: "event/streamStart" });
+    if (stream.myself.value) connection.send({ type: "event/streamStart" });
 
     // Send user profile
     const timestamp = Date.now();
@@ -171,17 +173,23 @@ function handleConnection(connection) {
     };
 
     if (profile.value.nickname) {
-      crypto.subtle.importKey(
-        "jwk",
-        signKeypair.value.privateKey,
-        { name: "RSASSA-PKCS1-v1_5", hash: { name: "SHA-256" } },
-        false,
-        ["sign"]
-      ).then(privateKey => {
-        const encoder = new TextEncoder();
-        const encoded = encoder.encode(`${profile.value.nickname}\n${timestamp}`);
-        crypto.subtle.sign("RSASSA-PKCS1-v1_5", privateKey, encoded).then(callback);
-      });
+      crypto.subtle
+        .importKey(
+          "jwk",
+          signKeypair.value.privateKey,
+          { name: "RSASSA-PKCS1-v1_5", hash: { name: "SHA-256" } },
+          false,
+          ["sign"]
+        )
+        .then((privateKey) => {
+          const encoder = new TextEncoder();
+          const encoded = encoder.encode(
+            `${profile.value.nickname}\n${timestamp}`
+          );
+          crypto.subtle
+            .sign("RSASSA-PKCS1-v1_5", privateKey, encoded)
+            .then(callback);
+        });
     } else {
       callback(null);
     }
@@ -215,7 +223,7 @@ peer.value.on("call", async function (mediaConnection) {
   mediaConnection.on("stream", (mediaStream) => {
     triggerRef(peer);
     mediaStream.connection = mediaConnection;
-    stream.addIncoming(mediaStream)
+    stream.addIncoming(mediaStream);
   });
 });
 
@@ -296,7 +304,6 @@ function sendEvent(event, detail, peer = null) {
   };
 
   for (let conn of connections.value) {
-    if (!peer || conn.peer === peer)
-      conn.send(messageBody);
+    if (!peer || conn.peer === peer) conn.send(messageBody);
   }
 }

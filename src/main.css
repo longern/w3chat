@@ -42,7 +42,7 @@ body {
   display: flex;
 }
 
-.row+.row {
+.row + .row {
   margin-top: 8px;
 }
 

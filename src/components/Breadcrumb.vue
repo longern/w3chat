@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { inject } from "vue";
 import { streaming, joinStream } from "@/composables/transmit";
 
@@ -9,15 +9,16 @@ const showCallingModal = inject("showCallingModal");
   <div
     v-if="streaming.length && !showCallingModal"
     class="breadcrumb"
-    @click="joinStream(); showCallingModal = true"
+    @click="
+      joinStream();
+      showCallingModal = true;
+    "
   >
     <div id="breadcrumb" class="breadcrumb--wrap">
       <span v-if="streaming.length === 1">
         {{ streaming[0] }}
       </span>
-      <span v-else>
-        {{ streaming.length }} members
-      </span>
+      <span v-else>{{ streaming.length }} members</span>
       <span> is streaming. Click to join.</span>
     </div>
   </div>
