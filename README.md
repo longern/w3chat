@@ -1,7 +1,10 @@
-# Vue 3 + Vite
+# Web without webserver Chat
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+W3Chat is a peer-to-peer chat website using WebRTC.
 
-## Recommended IDE Setup
-
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar)
+* Simple! No registration, no login. Share and chat.
+* Private! Data is NOT stored on the server. No supervision.
+* Secure! All data is encrypted by WebRTC.
+* Powerful! Text, images, audio, video messages.
+* Open Source! Everything is here. No secret parts.
+* (TODO)Trusty! Free to choose your own trusted peers.
