@@ -10,7 +10,7 @@ import Footer from "./components/Footer.vue";
 import Record from "./components/Record.vue";
 import Calling from "@/components/Calling.vue";
 
-import { sendMessage, peer, connections, messages } from "./composables/transmit";
+import { sendMessage, messages } from "./composables/transmit";
 
 const showSidebar = ref(false);
 provide("showSidebar", showSidebar);
@@ -23,13 +23,10 @@ provide("showCallingModal", showCallingModal);
 <template>
   <Sidebar v-show="showSidebar" />
 
-  <Header
-    :peer-id="peer ? peer.id : ''"
-    :online="connections.length + (peer ? 1 : 0)"
-  />
+  <Header />
   <Breadcrumb />
   <Main :messages="messages" />
-  <Footer :disabled="!peer" @send="sendMessage" />
+  <Footer @send="sendMessage" />
   <KeepAlive>
     <Record v-if="showRecordFooter" @record="sendMessage" />
   </KeepAlive>

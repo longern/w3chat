@@ -1,11 +1,14 @@
-import { ref } from "vue";
+import { ref, shallowRef, triggerRef } from "vue";
 
-import { profile, users } from "@/composables/state";
-import stream from "@/composables/stream";
-import { digestHex, resizeImage } from "@/composables/utils";
-import { signKeypair } from "./state";
+import { profile, signKeypair, users } from "./state";
+import stream from "./stream";
+import { digestHex, resizeImage } from "./utils";
 
-export const peer = ref(null);
+export const peer = shallowRef({
+  id: undefined,
+  open: false,
+  connections: {},
+});
 export const messages = ref([]);
 export const connections = ref([]);
 export const blobPool = ref({});
@@ -16,10 +19,8 @@ const events = new EventTarget();
 const MAX_CONNECTIONS = 32;
 
 const manualIdMatch = location.search.match(/m=([\da-f-]{6,})/);
-if (manualIdMatch)
-  peer.value = new Peer(manualIdMatch[1]);
-else
-  peer.value = new Peer(Math.random().toString().slice(2, 11));
+const proposedID = manualIdMatch ? manualIdMatch[1] : Math.random().toString().slice(2, 11);
+peer.value = new Peer(proposedID);
 
 events.addEventListener("broadcast", (event) => {
   const { body } = event.detail;
@@ -135,6 +136,7 @@ function handleConnection(connection) {
   connection.on("error", onError);
   connection.on("close", removeClosedConnections);
   connection.on("open", function () {
+    triggerRef(peer);
     connections.value.push(this);
     connectingPeers.delete(this.peer);
 
@@ -184,6 +186,8 @@ function handleConnection(connection) {
 }
 
 peer.value.on("open", function (id) {
+  triggerRef(peer);
+
   // Connect to the peer specified in the URL, if any.
   const peerIdMatch = location.search.match(/p=([\da-f-]*)/);
   if (peerIdMatch && connections.value.length <= MAX_CONNECTIONS) {
@@ -220,6 +224,7 @@ function removeClosedConnections() {
       i--;
     }
   }
+  triggerRef(peer);
 }
 
 stream.on("start", async function () {
@@ -270,4 +275,19 @@ export async function sendMessage(message) {
     conn.send(messageBody);
   }
   messages.value.push(messageBody);
+}
+
+function sendEvent(event, detail, peer = null) {
+  const messageBody = {
+    id: Math.random().toString(36).substring(2),
+    type: `event/${event}`,
+    from: peer.value.id,
+    detail: detail,
+    timestamp: Date.now(),
+  };
+
+  for (let conn of connections.value) {
+    if (!peer || conn.peer === peer)
+      conn.send(messageBody);
+  }
 }

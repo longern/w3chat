@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { inject, ref } from "vue";
 import type { Ref } from 'vue';
+
 import stream from "@/composables/stream";
+import { peer } from "@/composables/transmit";
 
 const text = ref("");
 const showRecordFooter = inject<Ref<boolean>>("showRecordFooter");
@@ -9,10 +11,6 @@ const showCallingModal = inject<Ref<boolean>>("showCallingModal");
 
 const input = ref(null);
 const image = ref(null);
-
-const props = defineProps({
-  disabled: Boolean,
-});
 
 const emit = defineEmits(["send"]);
 
@@ -48,7 +46,7 @@ async function openMediaStream() {
         <div class="col-auto">
           <button
             type="submit"
-            :disabled="disabled"
+            :disabled="!peer.open"
             class="send-button color-primary"
           >
             <span>Send</span>
