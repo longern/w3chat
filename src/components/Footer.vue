@@ -97,7 +97,8 @@ async function openMediaStream() {
 <style>
 .send-button {
   margin-left: 8px;
-  padding: 8px 12px;
+  padding: 0px 12px;
+  height: 32px;
 }
 
 .button-group span.mdi {
