@@ -5,6 +5,7 @@ body {
 
 body {
   margin: 0;
+  font-display: swap;
 }
 
 @media (max-width: 960px) {
@@ -128,7 +129,7 @@ button.size-48 > span.mdi {
 }
 
 .color-primary {
-  background-color: #4285f4;
+  background-color: #1976d2;
   color: white;
 }
 

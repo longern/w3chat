@@ -6,7 +6,7 @@ import stream from "@/composables/stream";
 import { peer } from "@/composables/transmit";
 
 const text = ref("");
-const showRecordFooter = inject<Ref<boolean>>("showRecordFooter");
+const showRecordPanel = inject<Ref<boolean>>("showRecordPanel");
 const showCallingModal = inject<Ref<boolean>>("showCallingModal");
 
 const input = ref(null);
@@ -41,11 +41,17 @@ async function openMediaStream() {
     <form @submit.prevent="sendMessage">
       <div class="row">
         <div class="col">
-          <input ref="input" class="fill-width" v-model="text" />
+          <input
+            ref="input"
+            class="fill-width"
+            v-model="text"
+            aria-labelledby="message"
+          />
         </div>
         <div class="col-auto">
           <button
             type="submit"
+            aria-label="Send message"
             :disabled="!peer.open"
             class="send-button color-primary"
           >
@@ -58,19 +64,27 @@ async function openMediaStream() {
     <!-- Second row (buttons) -->
     <div class="row button-group" style="margin: 4px 0; text-align: center">
       <div class="col">
-        <button class="btn-text" @click="showRecordFooter = !showRecordFooter">
+        <button
+          aria-label="Show record panel"
+          class="btn-text"
+          @click="showRecordPanel = !showRecordPanel"
+        >
           <span class="mdi mdi-microphone"></span>
         </button>
       </div>
       <div class="col">
-        <button class="btn-text" @click="image.click()">
+        <button aria-label="Send image" class="btn-text" @click="image.click()">
           <span class="mdi mdi-image">
             <input ref="image" type="file" hidden @change="sendImage" />
           </span>
         </button>
       </div>
       <div class="col">
-        <button class="btn-text" @click="openMediaStream">
+        <button
+          aria-label="Video chat"
+          class="btn-text"
+          @click="openMediaStream"
+        >
           <span class="mdi mdi-video"></span>
         </button>
       </div>

@@ -39,10 +39,17 @@ function share() {
 <template>
   <div class="header color-primary row">
     <button
+      aria-label="Toggle sidebar"
       class="col-auto btn-icon rounded size-48"
       @click="showSidebar = true"
     >
-      <img v-if="profile.avatar" :src="profile.avatar" />
+      <img
+        v-if="profile.avatar"
+        :src="profile.avatar"
+        alt="avatar"
+        width="48"
+        height="48"
+      />
       <span v-else class="mdi mdi-account"></span>
     </button>
     <div class="col">
@@ -58,6 +65,7 @@ function share() {
     </div>
     <button
       v-visible="!isWechat"
+      aria-label="Share"
       class="col-auto btn-icon size-48"
       @click="share"
     >

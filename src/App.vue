@@ -14,8 +14,8 @@ import { sendMessage, messages } from "./composables/transmit";
 
 const showSidebar = ref(false);
 provide("showSidebar", showSidebar);
-const showRecordFooter = ref(false);
-provide("showRecordFooter", showRecordFooter);
+const showRecordPanel = ref(false);
+provide("showRecordPanel", showRecordPanel);
 const showCallingModal = ref(false);
 provide("showCallingModal", showCallingModal);
 </script>
@@ -28,7 +28,7 @@ provide("showCallingModal", showCallingModal);
   <Main :messages="messages" />
   <Footer @send="sendMessage" />
   <KeepAlive>
-    <Record v-if="showRecordFooter" @record="sendMessage" />
+    <Record v-if="showRecordPanel" @record="sendMessage" />
   </KeepAlive>
 
   <Teleport to="body">

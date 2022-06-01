@@ -15,7 +15,7 @@ async function uploadAvatar() {
 
   const imageFile = avatarInput.files[0];
   const imageBlob = new Blob([imageFile], { type: imageFile.type });
-  const resizedImage = await resizeImage(imageBlob, { width: 48, height: 48 });
+  const resizedImage = await resizeImage(imageBlob, { width: 96, height: 96 });
 
   // Convert resizedImage to data URL
   const reader = new FileReader();
@@ -61,7 +61,12 @@ async function changeNickname() {
           class="btn-icon rounded size-48 flex-shrink-0"
           onclick="this.nextElementSibling.click()"
         >
-          <img v-if="profile.avatar" :src="profile.avatar" />
+          <img
+            v-if="profile.avatar"
+            :src="profile.avatar"
+            width="48"
+            height="48"
+          />
           <span v-else class="mdi mdi-account"></span>
         </button>
         <input
