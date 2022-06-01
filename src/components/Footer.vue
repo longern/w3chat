@@ -42,7 +42,7 @@ async function openMediaStream() {
     <!-- First row (line input) -->
     <form @submit.prevent="sendMessage">
       <div class="row">
-        <div class="col">
+        <div class="col inline-flex">
           <input
             ref="input"
             class="fill-width"
@@ -96,7 +96,7 @@ async function openMediaStream() {
 
 <style>
 .send-button {
-  margin-left: 24px;
+  margin-left: 8px;
   padding: 8px 12px;
 }
 
