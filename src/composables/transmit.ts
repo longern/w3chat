@@ -124,6 +124,8 @@ function onReceiveData(body) {
 }
 
 function onError(err) {
+  if (err.type === "network") return;
+
   // Display error as a private message.
   messages.value.push({
     id: Math.random().toString(36).substring(2),
@@ -228,7 +230,10 @@ peer.value.on("call", async function (mediaConnection) {
 });
 
 peer.value.on("connection", handleConnection);
-peer.value.on("disconnected", peer.value.reconnect);
+peer.value.on("disconnected", () => {
+  triggerRef(peer);
+  setTimeout(() => peer.value.reconnect(), 5000);
+});
 peer.value.on("error", onError);
 window.addEventListener("beforeunload", () => peer.value.destroy());
 

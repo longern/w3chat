@@ -57,7 +57,7 @@ function share() {
     <div class="col">
       <div class="row flex-column fill-height">
         <div class="flex-grow-1"></div>
-        <div v-text="verbosePeerId(peer.id) || 'Connecting...'"></div>
+        <div v-text="verbosePeerId(peer.id) || t('Connecting...')"></div>
         <div style="font-size: 8px">
           <span
             v-text="t('%{onlineNumber} online', { onlineNumber: onlineNumber })"
@@ -93,10 +93,12 @@ function share() {
 {
   "en": {
     "%{onlineNumber} online": "%{onlineNumber} online",
+    "Connecting...": "Connecting...",
     "invitation": "%{onlineNumber} friends are online. Click to join."
   },
   "zh-CN": {
     "%{onlineNumber} online": "%{onlineNumber} 人在线",
+    "Connecting...": "连接中...",
     "invitation": "%{onlineNumber} 位好友正在聊天，点击加入。"
   }
 }
