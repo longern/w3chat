@@ -31,7 +31,7 @@ function share() {
 
   nativeShare.setShareData({
     title: "W3Chat",
-    desc: t("invitation"),
+    desc: t("invitation", { onlineNumber: onlineNumber.value }),
     link: url.href,
   });
   nativeShare.call();
