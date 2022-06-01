@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, inject, ref } from "vue";
 import type { Ref } from "vue";
+import { useI18n } from "vue-i18n";
 import NativeShare from "nativeshare";
 
 import { profile } from "@/composables/state";
@@ -8,6 +9,7 @@ import { peer } from "@/composables/transmit";
 
 const isWechat = ref(/micromessenger/i.test(navigator.userAgent));
 const showSidebar = inject<Ref<boolean>>("showSidebar");
+const { t } = useI18n({ inheritLocale: true });
 
 function verbosePeerId(peerId: string) {
   if (!peerId) return "";
@@ -29,7 +31,7 @@ function share() {
 
   nativeShare.setShareData({
     title: "W3Chat",
-    desc: `${onlineNumber.value}位好友正在邀请你聊天`,
+    desc: t("invitation"),
     link: url.href,
   });
   nativeShare.call();
@@ -57,8 +59,9 @@ function share() {
         <div class="flex-grow-1"></div>
         <div v-text="verbosePeerId(peer.id) || 'Connecting...'"></div>
         <div style="font-size: 8px">
-          <span v-text="onlineNumber"></span>
-          <span> online</span>
+          <span
+            v-text="t('%{onlineNumber} online', { onlineNumber: onlineNumber })"
+          ></span>
         </div>
         <div class="flex-grow-1"></div>
       </div>
@@ -85,3 +88,16 @@ function share() {
   background: none;
 }
 </style>
+
+<i18n>
+{
+  "en": {
+    "%{onlineNumber} online": "%{onlineNumber} online",
+    "invitation": "%{onlineNumber} friends are online. Click to join."
+  },
+  "zh-CN": {
+    "%{onlineNumber} online": "%{onlineNumber} 人在线",
+    "invitation": "%{onlineNumber} 位好友正在聊天，点击加入。"
+  }
+}
+</i18n>

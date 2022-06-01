@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { inject, ref } from "vue";
 import type { Ref } from "vue";
+import { useI18n } from "vue-i18n";
 
 import stream from "@/composables/stream";
 import { peer } from "@/composables/transmit";
@@ -11,6 +12,7 @@ const showCallingModal = inject<Ref<boolean>>("showCallingModal");
 
 const input = ref(null);
 const image = ref(null);
+const { t } = useI18n({ inheritLocale: true });
 
 const emit = defineEmits(["send"]);
 
@@ -55,7 +57,7 @@ async function openMediaStream() {
             :disabled="!peer.open"
             class="send-button color-primary"
           >
-            <span>Send</span>
+            <span>{{ t("Send") }}</span>
           </button>
         </div>
       </div>
@@ -111,3 +113,14 @@ async function openMediaStream() {
   color: deepskyblue;
 }
 </style>
+
+<i18n>
+{
+  "en": {
+    "Send": "Send"
+  },
+  "zh-CN": {
+    "Send": "发送"
+  }
+}
+</i18n>
