@@ -160,6 +160,7 @@ button {
 }
 
 button > span.mdi {
+  display: inline-flex;
   margin: auto;
 }
 
@@ -170,4 +171,5 @@ button > span.mdi {
 .btn-icon {
   display: flex;
   padding: 0;
+  background: none;
 }

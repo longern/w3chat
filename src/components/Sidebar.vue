@@ -55,7 +55,7 @@ async function changeNickname() {
 <template>
   <Transition name="from-left" appear>
     <div class="sidebar">
-      <div class="row" style="padding: 32px 16px">
+      <div class="row" style="padding: 48px 16px">
         <button class="close btn-text size-48" @click="showSidebar = false">
           <span class="mdi mdi-close"></span>
         </button>
@@ -83,6 +83,28 @@ async function changeNickname() {
           :placeholder="t('Nickname...')"
           @change="changeNickname"
         />
+      </div>
+      <div class="row">
+        <div class="list">
+          <div class="list-item">
+            <button class="btn-icon size-32 list-icon" @click.prevent>
+              <span class="mdi mdi-wallet"></span>
+            </button>
+            <span v-text="t('Wallet')"></span>
+          </div>
+          <div class="list-item">
+            <button class="btn-icon size-32 list-icon" @click.prevent>
+              <span class="mdi mdi-folder"></span>
+            </button>
+            <span v-text="t('Files')"></span>
+          </div>
+          <div class="list-item">
+            <button class="btn-icon size-32 list-icon" @click.prevent>
+              <span class="mdi mdi-cog"></span>
+            </button>
+            <span v-text="t('Settings')"></span>
+          </div>
+        </div>
       </div>
     </div>
   </Transition>
@@ -125,15 +147,40 @@ async function changeNickname() {
 .sidebar input {
   font-size: 16px;
 }
+
+.list {
+  width: 100%;
+}
+
+.list-item {
+  display: flex;
+  width: 100%;
+  min-height: 48px;
+  align-items: center;
+}
+
+.list-item:active {
+  background-color: whitesmoke;
+}
+
+.list-icon {
+  margin: 0 12px;
+}
 </style>
 
 <i18n>
 {
   "en": {
-    "Nickname...": "Nickname..."
+    "Files": "Files",
+    "Nickname...": "Nickname...",
+    "Settings": "Settings",
+    "Wallet": "Wallet"
   },
   "zh-CN": {
-    "Nickname...": "昵称..."
+    "Files": "文件",
+    "Nickname...": "昵称...",
+    "Settings": "设置",
+    "Wallet": "钱包"
   }
 }
 </i18n>
