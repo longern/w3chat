@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { inject } from "vue";
 import type { Ref } from "vue";
+import { useI18n } from "vue-i18n";
 
 import { profile, signKeypair } from "@/composables/state";
 import { resizeImage } from "@/composables/utils";
 
 const showSidebar = inject<Ref<boolean>>("showSidebar");
+const { t } = useI18n({ inheritLocale: true });
 
 async function uploadAvatar() {
   const avatarInput = <HTMLInputElement>(
@@ -78,7 +80,7 @@ async function changeNickname() {
         />
         <input
           v-model="profile.nickname"
-          placeholder="Nickname..."
+          :placeholder="t('Nickname...')"
           @change="changeNickname"
         />
       </div>
@@ -124,3 +126,14 @@ async function changeNickname() {
   font-size: 16px;
 }
 </style>
+
+<i18n>
+{
+  "en": {
+    "Nickname...": "Nickname..."
+  },
+  "zh-CN": {
+    "Nickname...": "昵称..."
+  }
+}
+</i18n>
