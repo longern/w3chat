@@ -33,47 +33,54 @@ onUpdated(() => {
       :key="i"
       :class="{ myself: message.from === peer.id }"
     >
-      <div class="col-auto">
-        <div class="avatar rounded">
-          <img
-            v-if="(users[message.from] || {}).avatar"
-            :src="users[message.from].avatar"
-            class="fill-width"
-          />
-          <span v-else class="mdi mdi-account"></span>
+      <template v-if="message.from === 'System'">
+        <div class="col system-message" v-text="message.data"></div>
+      </template>
+      <template v-else>
+        <div class="col-auto">
+          <div class="avatar rounded">
+            <img
+              v-if="(users[message.from] || {}).avatar"
+              :src="users[message.from].avatar"
+              class="fill-width"
+            />
+            <span v-else class="mdi mdi-account"></span>
+          </div>
         </div>
-      </div>
-      <div class="col">
-        <div class="from">
-          <span
-            v-text="(users[message.from] || {}).nickname || message.from || 'I'"
-          ></span>
+        <div class="col">
+          <div class="from">
+            <span
+              v-text="
+                (users[message.from] || {}).nickname || message.from || 'I'
+              "
+            ></span>
+          </div>
+          <div class="fill-width">
+            <span
+              v-if="message.type === 'text/plain'"
+              class="message"
+              v-text="message.data"
+            ></span>
+            <a
+              v-else-if="message.type.startsWith('image/')"
+              :href="blobPool[message.digest].url || message.url"
+              target="_blank"
+            >
+              <img class="message" :src="message.url" />
+            </a>
+            <template v-else-if="message.type.startsWith('audio/')">
+              <audio v-if="blobPool[message.digest].url" controls>
+                <source :src="blobPool[message.digest].url" />
+              </audio>
+              <audio v-else controls />
+            </template>
+            <span
+              v-if="message.digest && !blobPool[message.digest].url"
+              class="mdi mdi-spin mdi-loading"
+            ></span>
+          </div>
         </div>
-        <div class="fill-width">
-          <span
-            v-if="message.type === 'text/plain'"
-            class="message"
-            v-text="message.data"
-          ></span>
-          <a
-            v-else-if="message.type.startsWith('image/')"
-            :href="blobPool[message.digest].url || message.url"
-            target="_blank"
-          >
-            <img class="message" :src="message.url" />
-          </a>
-          <template v-else-if="message.type.startsWith('audio/')">
-            <audio v-if="blobPool[message.digest].url" controls>
-              <source :src="blobPool[message.digest].url" />
-            </audio>
-            <audio v-else controls />
-          </template>
-          <span
-            v-if="message.digest && !blobPool[message.digest].url"
-            class="mdi mdi-spin mdi-loading"
-          ></span>
-        </div>
-      </div>
+      </template>
     </div>
   </div>
 </template>
@@ -95,6 +102,11 @@ onUpdated(() => {
 
 .message {
   max-width: 100%;
+}
+
+.system-message {
+  font-size: 8px;
+  text-align: center;
 }
 
 span.message {
