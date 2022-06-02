@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUpdate, onUpdated, ref } from "vue";
+import { onBeforeUpdate, onUpdated, ref, watch } from "vue";
 
 import { blobPool, peer } from "@/composables/transmit";
 import { users } from "@/composables/state";
@@ -7,6 +7,12 @@ import { users } from "@/composables/state";
 defineProps<{ messages: Array<Record<string, any>> }>();
 
 const main = ref(null);
+const cachedPeerId = ref(null);
+
+watch(peer, (peer) => {
+  if (peer.open) cachedPeerId.value = peer.id;
+});
+
 let scrollToBottom = false;
 
 onBeforeUpdate(() => {
@@ -31,7 +37,7 @@ onUpdated(() => {
       class="row"
       v-for="(message, i) in messages"
       :key="i"
-      :class="{ myself: message.from === peer.id }"
+      :class="{ myself: message.from === cachedPeerId }"
     >
       <template v-if="message.from === 'System'">
         <div class="col system-message" v-text="message.data"></div>
