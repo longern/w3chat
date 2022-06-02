@@ -16,7 +16,6 @@
   "devDependencies": {
     "@intlify/vite-plugin-vue-i18n": "^3.4.0",
     "@vitejs/plugin-vue": "^2.3.3",
-    "rollup-plugin-external-globals": "^0.6.1",
     "vite": "^2.9.9"
   }
 }
