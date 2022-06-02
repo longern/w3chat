@@ -35,3 +35,11 @@ export async function digestHex(blob: Blob) {
     .join("");
   return hashHex;
 }
+
+export function chunk(arr: Array<any> | String, chunkSize: number) {
+  return Array(Math.ceil(arr.length / chunkSize))
+    .fill(0)
+    .map(function (_, i) {
+      return arr.slice(i * chunkSize, i * chunkSize + chunkSize);
+    });
+}

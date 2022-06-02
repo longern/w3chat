@@ -6,6 +6,7 @@ import NativeShare from "nativeshare";
 
 import { profile } from "@/composables/state";
 import { peer } from "@/composables/transmit";
+import { chunk } from "@/composables/utils";
 
 const isWechat = ref(/micromessenger/i.test(navigator.userAgent));
 const showSidebar = inject<Ref<boolean>>("showSidebar");
@@ -57,7 +58,17 @@ function share() {
     <div class="col">
       <div class="row flex-column fill-height">
         <div class="flex-grow-1"></div>
-        <div v-text="verbosePeerId(peer.id) || t('Connecting...')"></div>
+        <div>
+          <span v-if="peer.id">
+            <span
+              v-for="(seg, i) in chunk(peer.id, 3)"
+              :key="i"
+              v-text="seg"
+              class="peer-id-segment"
+            ></span>
+          </span>
+          <span v-else v-text="t('Connecting...')"></span>
+        </div>
         <div style="font-size: 8px">
           <span
             v-text="t('%{onlineNumber} online', { onlineNumber: onlineNumber })"
@@ -86,6 +97,10 @@ function share() {
 .header > button {
   color: white;
   background: none;
+}
+
+.header .peer-id-segment + .peer-id-segment {
+  margin-left: 0.3em;
 }
 </style>
 
