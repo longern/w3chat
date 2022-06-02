@@ -44,14 +44,14 @@ onUpdated(() => {
       </template>
       <template v-else>
         <div class="col-auto">
-          <div class="avatar rounded">
+          <button class="btn-icon size-32 avatar rounded">
             <img
               v-if="(users[message.from] || {}).avatar"
               :src="users[message.from].avatar"
               class="fill-width"
             />
             <span v-else class="mdi mdi-account"></span>
-          </div>
+          </button>
         </div>
         <div class="col">
           <div class="from">
@@ -137,18 +137,8 @@ img.message {
   margin-bottom: 2px;
 }
 
-.avatar {
-  width: 32px;
-  height: 32px;
+button.avatar {
   margin-right: 8px;
-  background: white;
-  text-align: center;
-}
-
-.avatar > span {
-  display: block;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
+  background-color: white;
 }
 </style>
