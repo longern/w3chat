@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import stream, { myself, incomings } from "@/composables/stream";
 
 defineProps({ modelValue: Boolean });
 const emit = defineEmits(["update:modelValue"]);
 
 const small = ref(false);
+const muted = ref(false);
+const cameraOff = ref(false);
 
 function hangup() {
   stream.stop();
@@ -14,6 +16,18 @@ function hangup() {
   incomings.value = [];
   emit("update:modelValue", false);
 }
+
+watch(muted, () => {
+  const tracks = stream.myself.value.getTracks();
+  const audioTrack = tracks.filter((track) => track.kind === "audio")[0];
+  audioTrack.enabled = !muted.value;
+});
+
+watch(cameraOff, () => {
+  const tracks = stream.myself.value.getTracks();
+  const videoTrack = tracks.filter((track) => track.kind === "video")[0];
+  videoTrack.enabled = !cameraOff.value;
+});
 
 stream.on("remove", () => {
   if (!myself.value && !incomings.value.length)
@@ -50,6 +64,20 @@ stream.on("remove", () => {
     </template>
     <div v-if="!small" class="calling-buttons">
       <div class="flex-grow-1" />
+      <template v-if="myself">
+        <button class="btn-icon size-48">
+          <span
+            :class="['mdi', muted ? 'mdi-microphone-off' : 'mdi-microphone']"
+            @click.stop="muted = !muted"
+          ></span>
+        </button>
+        <button class="btn-icon size-48">
+          <span
+            :class="['mdi', cameraOff ? 'mdi-camera-off' : 'mdi-camera']"
+            @click.stop="cameraOff = !cameraOff"
+          ></span>
+        </button>
+      </template>
       <button class="btn-icon size-48">
         <span class="mdi mdi-resize" @click.stop="small = !small"></span>
       </button>
