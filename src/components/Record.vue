@@ -10,7 +10,10 @@ let chunks: Blob[] = [];
 
 onActivated(() => {
   navigator.mediaDevices
-    .getUserMedia({ audio: true, video: false })
+    .getUserMedia({
+      audio: { echoCancellation: false },
+      video: false,
+    })
     .then((stream) => (audioStream = stream));
 });
 
@@ -24,7 +27,7 @@ onDeactivated(() => {
 function startRecord() {
   if (!audioStream) return;
   recording.value = true;
-  recorder = new MediaRecorder(audioStream);
+  recorder = new MediaRecorder(audioStream, { audioBitsPerSecond: 192000 });
   recorder.addEventListener("dataavailable", (event) => {
     chunks.push(event.data);
   });
