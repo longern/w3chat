@@ -6,6 +6,7 @@ body {
 body {
   margin: 0;
   font-display: swap;
+  font-family: Roboto, arial, sans-serif;
 }
 
 @media (max-width: 960px) {
