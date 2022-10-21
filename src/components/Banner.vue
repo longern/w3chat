@@ -8,13 +8,13 @@ const showCallingModal = inject("showCallingModal");
 <template>
   <div
     v-if="streaming.length && !showCallingModal"
-    class="breadcrumb"
+    class="banner"
     @click="
       joinStream();
       showCallingModal = true;
     "
   >
-    <div id="breadcrumb" class="breadcrumb--wrap">
+    <div id="banner" class="banner--wrap">
       <span v-if="streaming.length === 1">
         {{ streaming[0] }}
       </span>
@@ -25,12 +25,12 @@ const showCallingModal = inject("showCallingModal");
 </template>
 
 <style>
-.breadcrumb {
+.banner {
   position: relative;
   z-index: 1;
 }
 
-.breadcrumb--wrap {
+.banner--wrap {
   background: #5fb1eb69;
   backdrop-filter: blur(8px);
   position: absolute;

@@ -4,7 +4,7 @@
 import { ref, provide } from "vue";
 import Sidebar from "./components/Sidebar.vue";
 import Header from "./components/Header.vue";
-import Breadcrumb from "./components/Breadcrumb.vue";
+import Banner from "./components/Banner.vue";
 import Main from "./components/Main.vue";
 import Footer from "./components/Footer.vue";
 import Record from "./components/Record.vue";
@@ -24,7 +24,7 @@ provide("showCallingModal", showCallingModal);
   <Sidebar v-show="showSidebar" />
 
   <Header />
-  <Breadcrumb />
+  <Banner />
   <Main :messages="messages" />
   <Footer @send="sendMessage" />
   <KeepAlive>
