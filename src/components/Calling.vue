@@ -115,7 +115,7 @@ stream.on("remove", () => {
 .smallscreen-modal > video,
 .fullscreen-modal > video {
   position: absolute;
-  object-fit: cover;
+  object-fit: contain;
   width: 100%;
   height: 100%;
 }
