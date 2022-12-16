@@ -18,19 +18,12 @@ const manualIdMatch = location.search.match(/m=([\da-f-]{6,})/);
 const proposedID = manualIdMatch
   ? manualIdMatch[1]
   : Math.random().toString().slice(2, 11);
-peer.value = new Peer(proposedID, {
-  config: {
-    iceServers: [
-      { url: "stun:stun.l.google.com:19302" },
-      { url: "stun:stun.easyvoip.com:3478" },
-      {
-        urls: "turn:openrelay.metered.ca:443",
-        username: "openrelayproject",
-        credential: "openrelayproject",
-      },
-    ],
-  },
-});
+try {
+  const iceServers = JSON.parse(import.meta.env.VITE_ICE_SERVERS);
+  peer.value = new Peer(proposedID, { config: { iceServers } });
+} catch (err) {
+  peer.value = new Peer(proposedID);
+}
 
 class TransmitEventTarget extends EventTarget {
   public on(event: string, callback: { (detail: any): void }) {
